@@ -13,7 +13,7 @@ export default function Home() {
   const [columnDefs, setColumnDefs] = useState([
     { field: 'user_id', headerName: 'User ID' },
     { field: 'nickname', headerName: 'Nickname' },
-    { field: 'admin-phone-number', headerName: 'Admin Phone Number' },
+    { field: 'stats_attendance_attended_cached', headerName: 'Attended' },
     { field: 'skills-belaying', headerName: 'Skills Belaying' },
     { field: 'first_name', headerName: 'First Name' },
     { field: 'cc_attendance', headerName: 'CC Attendance' },
@@ -46,7 +46,14 @@ export default function Home() {
       });
 
       const result = await postResponse.json();
-      setRowData(Object.values(result));
+      const flattenedData = Object.entries(result).map(([user_id, data]) => {
+        return {
+          user_id,
+          ...data.user_meta,
+          ...data.order_meta,
+        };
+      });
+      setRowData(flattenedData);
     } catch (error) {
       console.error(error);
     }
