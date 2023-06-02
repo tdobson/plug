@@ -1,5 +1,7 @@
 # TODO 🚧
 
+https://help.glitch.com/kb/article/112-react-projects/
+
 Your new site is all yours so it doesn't matter if you break it! Try editing the code.
 
 Let's add the wiggle function to other elements in the site–you'll see comments in the code with `TODO` in them for each step.
