@@ -21,19 +21,21 @@ export default function Home() {
     { field: 'cc_volunteer_attendance', headerName: 'CC Volunteer Attendance' },
   ]);
 
+  const product_id = 15363;
+  
   const defaultColDef = useMemo(() => ({
     sortable: true,
   }));
-
+  
   const fetchData = async () => {
     try {
-      const response = await fetch(`https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/15363`);
+      const response = await fetch(`https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/` + product_id);
       const userIDs = await response.json();
 
       const userOrderMeta = {
-        product_id: 15363,
+        product_id: product_id,
         user_ids: userIDs,
-        user_meta_keys: ["nickname", "admin-phone-number", "skills-belaying", "first_name"],
+        user_meta_keys: ["nickname", "stats_attendance_attended_cached", "skills-belaying", "first_name"],
         order_meta_keys: ["cc_attendance", "cc_volunteer", "cc_volunteer_attendance"],
       };
 
