@@ -8,61 +8,87 @@ import Seo from './components/seo.jsx';
 import "./styles/styles.css";
 
 export default function Home() {
-const gridRef = useRef(); // Optional - for accessing Grid's API
-const [rowData, setRowData] = useState(); // Set rowData to Array of Objects, one Object per Row
-const [columnDefs, setColumnDefs] = useState([
-{ field: 'make', filter: true },
-{ field: 'model', filter: true },
-{ field: 'price' }
-]);
-const defaultColDef = useMemo(() => ({
-sortable: true
-}));
+  const gridRef = useRef(); // Optional - for accessing Grid's API
+  const [rowData, setRowData] = useState([]);
+  const [columnDefs, setColumnDefs] = useState([
+    { field: 'user_id', headerName: 'User ID' },
+    { field: 'nickname', headerName: 'Nickname' },
+    { field: 'admin-phone-number', headerName: 'Admin Phone Number' },
+    { field: 'skills-belaying', headerName: 'Skills Belaying' },
+    { field: 'first_name', headerName: 'First Name' },
+    { field: 'cc_attendance', headerName: 'CC Attendance' },
+    { field: 'cc_volunteer', headerName: 'CC Volunteer' },
+    { field: 'cc_volunteer_attendance', headerName: 'CC Volunteer Attendance' },
+  ]);
 
-const cellClickedListener = useCallback(event => {
-console.log('cellClicked', event);
-}, []);
+  const defaultColDef = useMemo(() => ({
+    sortable: true,
+  }));
 
-useEffect(() => {
-fetch('https://www.ag-grid.com/example-assets/row-data.json')
-.then(result => result.json())
-.then(rowData => setRowData(rowData))
-}, []);
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/15363`);
+      const userIDs = await response.json();
 
-const buttonListener = useCallback(e => {
-gridRef.current.api.deselectAll();
-}, []);
+      const userOrderMeta = {
+        product_id: 15363,
+        user_ids: userIDs,
+        user_meta_keys: ["nickname", "admin-phone-number", "skills-belaying", "first_name"],
+        order_meta_keys: ["cc_attendance", "cc_volunteer", "cc_volunteer_attendance"],
+      };
 
-return (
-<Router>
-<Seo />
-<main role="main" className="wrapper">
-<div className="content">
-<div>
-<button onClick={buttonListener}>Push Me</button>
-<div className="ag-theme-alpine" style={{ width: 500, height: 500 }}>
-<AgGridReact
-             ref={gridRef}
-             rowData={rowData}
-             columnDefs={columnDefs}
-             defaultColDef={defaultColDef}
-             animateRows={true}
-             rowSelection='multiple'
-             onCellClicked={cellClickedListener}
-           />
-</div>
-</div>
-<PageRouter />
-</div>
-</main>
-<footer className="footer">
-<div className="links">
-<Link href="/">Home</Link>
-<span className="divider">|</span>
-<Link href="/about">About</Link>
-</div>
+      const postResponse = await fetch(`https://www.climbingclan.com/wp-json/wp-api/v1/user-order-meta`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userOrderMeta),
+      });
 
-</footer>
-</Router>
-);
+      const result = await postResponse.json();
+      setRowData(Object.values(result));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const buttonListener = useCallback(() => {
+    gridRef.current.api.deselectAll();
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <Router>
+      <Seo />
+      <main role="main" className="wrapper">
+        <div className="content">
+          <div>
+            <button onClick={buttonListener}>Fetch Data</button>
+            <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
+              <AgGridReact
+                ref={gridRef}
+                rowData={rowData}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                animateRows={true}
+                rowSelection='multiple'
+              />
+            </div>
+          </div>
+          <PageRouter />
+        </div>
+      </main>
+      <footer className="footer">
+        <div className="links">
+          <Link href="/">Home</Link>
+          <span className="divider">|</span>
+          <Link href="/about">About</Link>
+        </div>
+      </footer>
+    </Router>
+  );
 }
