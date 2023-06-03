@@ -3,7 +3,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-const Data = ({ product_id }) => {
+const Data = ({ product_id, handleRowClick }) => {
   const [rowData, setRowData] = useState([]);
   const [columnDefs, setColumnDefs] = useState([
     { field: 'first_name', headerName: 'First Name' },
@@ -14,6 +14,12 @@ const Data = ({ product_id }) => {
     { field: 'cc_attendance', headerName: 'CC Attendance' },
     { field: 'cc_volunteer', headerName: 'CC Volunteer' },
     { field: 'cc_volunteer_attendance', headerName: 'CC Volunteer Attendance' },
+    { field: 'actions',
+      headerName: 'Actions',
+      cellRendererFramework: params => (
+        <button onClick={() => handleRowClick(params.data)}>Check In</button>
+      ),
+    },
   ]);
 
   const defaultColDef = useMemo(() => ({
