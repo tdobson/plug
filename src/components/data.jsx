@@ -29,9 +29,10 @@ const Data = ({ product_id, handleRowClick }) => {
 const fetchData = async () => {
   try {
     // Check if existing state is available and return it
-    //if (rowData.length > 0) {
-    //  return rowData;
-    //}
+    if (rowData.length > 0) {
+      console.log(rowData)
+      return rowData;
+    }
 
     // Fetch userOrderIDs from the first API call
     const response = await fetch(`https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/${product_id}`);
