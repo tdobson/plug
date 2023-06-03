@@ -3,6 +3,20 @@ import { animated } from "react-spring";
 import { useWiggle } from "../hooks/wiggle";
 import { Link } from "wouter";
 
+// Our language strings for the header
+const strings = [
+  "Hello React",
+  "Salut React",
+  "Hola React",
+  "안녕 React",
+  "Hej React"
+];
+
+// Utility function to choose a random value from the language array
+function randomLanguage() {
+  return strings[Math.floor(Math.random() * strings.length)];
+}
+
 /**
 * The Home function defines the content that makes up the main content of the Home page
 *
@@ -34,6 +48,19 @@ export default function Info() {
     <>
       <h1 className="title">{hello}!</h1>
       {/* When the user hovers over the image we apply the wiggle style to it */}
+                <div>
+            <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
+              <AgGridReact
+                ref={gridRef}
+                rowData={rowData}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                animateRows={true}
+                rowSelection='multiple'
+              />
+                  </div></div>
+      
+      
       <animated.div onMouseEnter={trigger} style={style}>
         <img
           src="https://cdn.glitch.com/2f80c958-3bc4-4f47-8e97-6a5c8684ac2c%2Fillustration.svg?v=1618196579405"
@@ -50,15 +77,7 @@ export default function Info() {
           </a>
         </animated.div>
       </div>
-      <div className="instructions">
-        <h2>Using this project</h2>
-        <p>
-          This is the Glitch <strong>Hello React</strong> project. You can use
-          it to build your own app. See more info in the{" "}
-          <Link href="/about">About</Link> page, and check out README.md in the
-          editor for additional detail plus next steps you can take!
-        </p>
-      </div>
+
     </>
   );
 }
