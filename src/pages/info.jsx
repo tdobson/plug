@@ -21,9 +21,7 @@ export default function Info() {
         </div>
       </div>
 
-      <Link href="/checkin">
-        <button>Check In</button>
-      </Link>
+
     </>
   );
 }
