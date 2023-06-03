@@ -10,7 +10,7 @@ import { Link } from "wouter";
 * The function in app.jsx defines the page wrapper that this appears in along with the footer
 */
 
-export default function Home() {
+export default function Info() {
   /* We use state to set the hello string from the array https://reactjs.org/docs/hooks-state.html
      - We'll call setHello when the user clicks to change the string
   */

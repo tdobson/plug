@@ -35,7 +35,7 @@ export default function Home() {
       const userOrderMeta = {
         product_id,
         user_order_ids: userOrderIDs,
-        user_meta_keys: ["last_name", "stats_attendance_attended_cached", "skills-belaying", "first_name","scores_attendance_reliability_score_cached","scores_volunteer_reliability_score_cached", "scores_volunteer_value_cached","admin-can-you-help"],
+        user_meta_keys: ["last_name", "stats_attendance_attended_cached", "skills-belaying", "first_name","scores_attendance_reliability_score_cached","scores_volunteer_reliability_score_cached", "scores_volunteer_value_cached","admin-can-you-help","nickname", "climbing-indoors-leading-grades","climbing-indoors-toproping-grades","climbing-indoors-skills-passing-on"],
         order_meta_keys: ["cc_attendance", "cc_volunteer", "cc_volunteer_attendance"],
       };
 

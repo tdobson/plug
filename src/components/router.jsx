@@ -15,5 +15,6 @@ export default () => (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
+      <Route path="/info" component={Info} />
     </Switch>
 );
