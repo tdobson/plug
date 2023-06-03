@@ -1,9 +1,5 @@
-import * as React from "react";
-import { animated } from "react-spring";
-import { useWiggle } from "../hooks/wiggle";
-import { Link } from "wouter";
-import Data from "../components/data.jsx";
-
+import React from "react";
+import { useLocation } from 'wouter';
 
 export default function CheckIn({ rowData }) {
   return (
@@ -18,3 +14,4 @@ export default function CheckIn({ rowData }) {
     </>
   );
 }
+
