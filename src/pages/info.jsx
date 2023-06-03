@@ -1,16 +1,16 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { Link, useLocation } from 'wouter';
 import CheckIn from '../pages/checkin';
-import Data from "../components/data.jsx";
+import { DataContext } from '../dataContext';
+import Data from '../components/data.jsx';
+
 
 export default function Info() {
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [, navigate] = useLocation();
+  const { setSelectedRow } = useContext(DataContext); // Get the setSelectedRow function from the data context
 
-  const handleRowClick = useCallback(rowData => {
-    setSelectedRow(rowData);
-    navigate('/checkin');
-  }, [navigate]);
+  const handleRowClick = (rowData) => {
+    setSelectedRow(rowData); // Update the selected row in the data context
+  };
 
   return (
     <>
@@ -21,11 +21,9 @@ export default function Info() {
         </div>
       </div>
 
-      {selectedRow && (
-        <Link href="/checkin">
-          <CheckIn rowData={selectedRow} />
-        </Link>
-      )}
+      <Link href="/checkin">
+        <button>Check In</button>
+      </Link>
     </>
   );
 }
