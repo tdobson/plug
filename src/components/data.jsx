@@ -1,10 +1,9 @@
-import * as React from "react";
+import React, { useState, useEffect, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
-import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-const Data = () => {
- const gridRef = useRef(); // Optional - for accessing Grid's API
+const Data = ({ product_id }) => {
   const [rowData, setRowData] = useState([]);
   const [columnDefs, setColumnDefs] = useState([
     { field: 'first_name', headerName: 'First Name' },
@@ -16,8 +15,6 @@ const Data = () => {
     { field: 'cc_volunteer', headerName: 'CC Volunteer' },
     { field: 'cc_volunteer_attendance', headerName: 'CC Volunteer Attendance' },
   ]);
-
-  const product_id = 13915;
 
   const defaultColDef = useMemo(() => ({
     sortable: true,
@@ -56,10 +53,22 @@ const Data = () => {
       console.error(error);
     }
   };
-  
-  return <Helmet>
 
-  </Helmet>
+  useEffect(() => {
+    fetchData();
+  }, [product_id]);
+
+  return (
+    <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
+      <AgGridReact
+        rowData={rowData}
+        columnDefs={columnDefs}
+        defaultColDef={defaultColDef}
+        animateRows={true}
+        rowSelection='multiple'
+      />
+    </div>
+  );
 };
 
 export default Data;

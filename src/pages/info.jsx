@@ -2,6 +2,7 @@ import * as React from "react";
 import { animated } from "react-spring";
 import { useWiggle } from "../hooks/wiggle";
 import { Link } from "wouter";
+import Data from "../components/data.jsx";
 
 // Our language strings for the header
 const strings = [
@@ -50,14 +51,8 @@ export default function Info() {
       {/* When the user hovers over the image we apply the wiggle style to it */}
                 <div>
             <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
-              <AgGridReact
-                ref={gridRef}
-                rowData={rowData}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-                animateRows={true}
-                rowSelection='multiple'
-              />
+      {/* Other content */}
+      <Data product_id={13915} />
                   </div></div>
       
       
