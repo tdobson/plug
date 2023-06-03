@@ -11,11 +11,11 @@ export default function Home() {
   const gridRef = useRef(); // Optional - for accessing Grid's API
   const [rowData, setRowData] = useState([]);
   const [columnDefs, setColumnDefs] = useState([
-    { field: 'user_id', headerName: 'User ID' },
-    { field: 'nickname', headerName: 'Nickname' },
-    { field: 'stats_attendance_attended_cached', headerName: 'Attended' },
-    { field: 'skills-belaying', headerName: 'Skills Belaying' },
     { field: 'first_name', headerName: 'First Name' },
+    { field: 'last_name', headerName: 'Last Name' },
+    { field: 'stats_attendance_attended_cached', headerName: 'first time?' },
+    { field: 'skills-belaying', headerName: 'Skills Belaying' },
+    { field: 'scores_attendance_reliability_score_cached', headerName: 'Reliability' },
     { field: 'cc_attendance', headerName: 'CC Attendance' },
     { field: 'cc_volunteer', headerName: 'CC Volunteer' },
     { field: 'cc_volunteer_attendance', headerName: 'CC Volunteer Attendance' },
@@ -35,7 +35,7 @@ export default function Home() {
       const userOrderMeta = {
         product_id,
         user_order_ids: userOrderIDs,
-        user_meta_keys: ["nickname", "stats_attendance_attended_cached", "skills-belaying", "first_name"],
+        user_meta_keys: ["last_name", "stats_attendance_attended_cached", "skills-belaying", "first_name","scores_attendance_reliability_score_cached","scores_volunteer_reliability_score_cached", "scores_volunteer_value_cached","admin-can-you-help"],
         order_meta_keys: ["cc_attendance", "cc_volunteer", "cc_volunteer_attendance"],
       };
 
