@@ -26,11 +26,24 @@ const Data = ({ product_id, handleRowClick }) => {
     sortable: true,
   }));
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/${product_id}`);
-      const userOrderIDs = await response.json();
+const fetchData = async () => {
+  try {
+    // Check if existing state is available and return it
+    //if (rowData.length > 0) {
+    //  return rowData;
+    //}
 
+    // Fetch userOrderIDs from the first API call
+    const response = await fetch(`https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/${product_id}`);
+    const userOrderIDs = await response.json();
+
+    // Check if all userOrderIDs are already in state
+    const allUserOrderIDsExist = userOrderIDs.every(id => {
+      return rowData.some(row => row.user_id === id);
+    });
+
+    if (!allUserOrderIDsExist) {
+      // Fetch details for the missing userOrderIDs from the second API call
       const userOrderMeta = {
         product_id,
         user_order_ids: userOrderIDs,
@@ -47,18 +60,25 @@ const Data = ({ product_id, handleRowClick }) => {
       });
 
       const result = await postResponse.json();
-      const flattenedData = Object.entries(result).map(([user_id, data]) => {
+      const newRows = Object.entries(result).map(([user_id, data]) => {
         return {
           user_id,
           ...data.user_meta,
           ...data.order_meta,
         };
       });
-      setRowData(flattenedData);
-    } catch (error) {
-      console.error(error);
+
+      // Update the state with the new rows
+      setRowData([...rowData, ...newRows]);
     }
-  };
+
+    // Return the updated state
+    return rowData;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
   useEffect(() => {
     fetchData();
