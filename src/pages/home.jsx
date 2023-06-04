@@ -1,7 +1,9 @@
-import * as React from "react";
+import  React, { useContext } from "react";
 import { animated } from "react-spring";
 import { useWiggle } from "../hooks/wiggle";
 import { Link } from "wouter";
+import { DataContext } from '../dataContext';
+
 
 // Our language strings for the header
 const strings = [
