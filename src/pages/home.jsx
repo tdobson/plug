@@ -29,7 +29,9 @@ export default function Home() {
      - We'll call setHello when the user clicks to change the string
   */
   const [hello, setHello] = React.useState(strings[0]);
-  
+
+  const { selectedRow } = useContext(DataContext); // Get the selectedRow from the data context
+
   /* The wiggle function defined in /hooks/wiggle.jsx returns the style effect and trigger function
      - We can attach this to events on elements in the page and apply the resulting style
   */
@@ -47,6 +49,13 @@ export default function Home() {
   return (
     <>
       <h1 className="title">{hello}!</h1>
+      {selectedRow && (
+          <>
+            <p>First Name: {selectedRow.first_name}</p>
+            <p>Last Name: {selectedRow.last_name}</p>
+            <p>Cabbage: {selectedRow.nickname}</p>
+          </>
+        )}
       {/* When the user hovers over the image we apply the wiggle style to it */}
       <animated.div onMouseEnter={trigger} style={style}>
         <img

@@ -16,7 +16,7 @@ export default function CheckIn() {
           <>
             <p>First Name: {selectedRow.first_name}</p>
             <p>Last Name: {selectedRow.last_name}</p>
-            {/* ... other data fields ... */}
+            <p>Cabbage: {selectedRow.nickname}</p>
           </>
         )}
       </div>
