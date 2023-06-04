@@ -38,7 +38,7 @@ const Data = ({ product_id, handleRowClick }) => {
       // Fetch userOrderIDs from the first API call
       const response = await fetch(`https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/${product_id}`);
       const userOrderIDs = await response.json();
-
+      //let userOrderIDs2 = String(userOrderIDs) + "bob"
       // Check if all userOrderIDs are already in state
       const allUserOrderIDsExist = userOrderIDs.every(id => {
         return rowData.some(row => row.user_id === id);
