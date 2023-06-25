@@ -14,7 +14,7 @@ export default function About() {
     <div className="page">
       {/* REPLACE H1 ELEMENT BELOW WITH CODE FROM TODO */}
       <h1 className="title">
-        About this site
+        About this abc
       </h1>
       {/* REPLACE OPENING P TAG BELOW WITH CODE FROM TODO */}
       <p>

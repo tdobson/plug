@@ -1,14 +1,19 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedRow, setGridData } from '../dataContext';
 
-const Data = ({ product_id, handleRowClick }) => {
-  const [rowData, setRowData] = useState([]);
-  const [columnDefs, setColumnDefs] = useState([
+const Data = ({ product_id }) => {
+  const dispatch = useDispatch();
+  const rowData = useSelector(state => state.gridData);
+  const selectedRow = useSelector(state => state.selectedRow);
+
+  const columnDefs = useMemo(() => [
     { field: 'first_name', headerName: 'First Name' },
     { field: 'last_name', headerName: 'Last Name' },
-    { field: 'stats_attendance_attended_cached', headerName: 'first time?' },
+    { field: 'stats_attendance_attended_cached', headerName: 'First Time?' },
     { field: 'skills-belaying', headerName: 'Skills Belaying' },
     { field: 'scores_attendance_reliability_score_cached', headerName: 'Reliability' },
     { field: 'cc_attendance', headerName: 'CC Attendance' },
@@ -18,14 +23,14 @@ const Data = ({ product_id, handleRowClick }) => {
       field: 'actions',
       headerName: 'Actions',
       cellRendererFramework: params => (
-        <button onClick={() => handleRowClick(params.data)}>Check In</button>
+          <button onClick={() => handleRowClick(params.data)}>Check In</button>
       ),
     },
-  ]);
+  ], []);
 
   const defaultColDef = useMemo(() => ({
     sortable: true,
-  }));
+  }), []);
 
   const fetchData = async () => {
     try {
@@ -38,7 +43,7 @@ const Data = ({ product_id, handleRowClick }) => {
       // Fetch userOrderIDs from the first API call
       const response = await fetch(`https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/${product_id}`);
       const userOrderIDs = await response.json();
-      //let userOrderIDs2 = String(userOrderIDs) + "bob"
+
       // Check if all userOrderIDs are already in state
       const allUserOrderIDsExist = userOrderIDs.every(id => {
         return rowData.some(row => row.user_id === id);
@@ -46,7 +51,7 @@ const Data = ({ product_id, handleRowClick }) => {
 
       if (!allUserOrderIDsExist) {
         const newRows = await fetchDetailsForMissingUserOrderIDs(userOrderIDs);
-        setRowData([...rowData, ...newRows]);
+        dispatch(setGridData([...rowData, ...newRows]));
       }
 
       // Return the updated state
@@ -90,6 +95,7 @@ const Data = ({ product_id, handleRowClick }) => {
     return newRows;
   };
 
+  // currently unused
   const flattenData = result => {
     const flattenedData = Object.entries(result).map(([user_id, data]) => {
       return {
@@ -105,16 +111,20 @@ const Data = ({ product_id, handleRowClick }) => {
     fetchData();
   }, [product_id]);
 
+  const handleRowClick = (rowData) => {
+    dispatch(setSelectedRow(rowData));
+  };
+
   return (
-    <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
-      <AgGridReact
-        rowData={rowData}
-        columnDefs={columnDefs}
-        defaultColDef={defaultColDef}
-        animateRows={true}
-        rowSelection="multiple"
-      />
-    </div>
+      <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
+        <AgGridReact
+            rowData={rowData}
+            columnDefs={columnDefs}
+            defaultColDef={defaultColDef}
+            animateRows={true}
+            rowSelection="multiple"
+        />
+      </div>
   );
 };
 

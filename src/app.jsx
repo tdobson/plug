@@ -6,21 +6,22 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import PageRouter from "./components/router.jsx";
 import Seo from './components/seo.jsx';
 import "./styles/styles.css";
-import { DataProvider } from './dataContext';
+import store from './dataContext';
+import { Provider } from 'react-redux';
 
 export default function Home() {
   return (
-    <Router>
-      <Seo />
+      <Router>
+          <Seo />
 
-      <DataProvider> {/* Wrap the components with the DataProvider */}
-        <main role="main" className="wrapper">
+          <Provider store={store}>
+              <main role="main" className="wrapper">
           <div className="content">
             <h2> Welcome to matrix</h2>
           </div>
           <PageRouter /> {/* Render the PageRouter component */}
         </main>
-      </DataProvider>
+      </Provider>
 
       <footer className="footer">
         <div className="links">
