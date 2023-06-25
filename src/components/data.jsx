@@ -6,62 +6,71 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, setGridData } from './actions.jsx';
 
 const Data = ({ product_id }) => {
-  const dispatch = useDispatch();
-  const rowData = useSelector((state) => state.gridData);
+    const dispatch = useDispatch();
+    const rowData = useSelector((state) => state.gridData);
 
-  const columnDefs = useMemo(
-      () => [
-        { field: 'first_name', headerName: 'First Name' },
-        { field: 'last_name', headerName: 'Last Name' },
-        { field: 'stats_attendance_attended_cached', headerName: 'First Time?' },
-        { field: 'skills-belaying', headerName: 'Skills Belaying' },
-        { field: 'scores_attendance_reliability_score_cached', headerName: 'Reliability' },
-        { field: 'cc_attendance', headerName: 'CC Attendance' },
-        { field: 'cc_volunteer', headerName: 'CC Volunteer' },
-        { field: 'cc_volunteer_attendance', headerName: 'CC Volunteer Attendance' },
-        {
-          field: 'actions',
-          headerName: 'Actions',
-          cellRendererFramework: (params) => (
-              <button onClick={() => handleRowClick(params.data)}>Check In</button>
-          ),
-        },
-      ],
-      []
-  );
+    const columnDefs = useMemo(
+        () => [
+            { field: 'first_name', headerName: 'First Name' },
+            { field: 'last_name', headerName: 'Last Name' },
+            { field: 'stats_attendance_attended_cached', headerName: 'First Time?' },
+            { field: 'skills-belaying', headerName: 'Skills Belaying' },
+            { field: 'scores_attendance_reliability_score_cached', headerName: 'Reliability' },
+            { field: 'cc_attendance', headerName: 'CC Attendance' },
+            { field: 'cc_volunteer', headerName: 'CC Volunteer' },
+            { field: 'cc_volunteer_attendance', headerName: 'CC Volunteer Attendance' },
+            {
+                field: 'actions',
+                headerName: 'Actions',
+                cellRendererFramework: (params) => (
+                    <button onClick={() => handleRowClick(params.data)}>Check In</button>
+                ),
+            },
+        ],
+        []
+    );
 
-  const defaultColDef = useMemo(
-      () => ({
-        sortable: true,
-      }),
-      []
-  );
+    const defaultColDef = useMemo(
+        () => ({
+            sortable: true,
+        }),
+        []
+    );
 
-  const fetchData = async () => {
-    try {
-      if (rowData.length > 0) {
-        return rowData;
-      }
+    const fetchData = async () => {
+        try {
+            if (rowData.length > 0) {
+                return rowData;
+            }
 
-      const response = await fetch(
-          `https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/${product_id}`
-      );
-      const userOrderIDs = await response.json();
+            // Add your authentication key to the headers
+            const headers = {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer geeboh7Jeengie8uS1chaiqu',
+            };
 
-      const allUserOrderIDsExist = userOrderIDs.every((id) =>
-          rowData.some((row) => row.user_id === id)
-      );
+            const response = await fetch(
+                `https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/${product_id}`,
+                {
+                    headers: headers,
+                }
+            );
+            const userOrderIDs = await response.json();
 
-      if (!allUserOrderIDsExist) {
-        const newRows = await fetchDetailsForMissingUserOrderIDs(userOrderIDs);
-        dispatch(setGridData([...rowData, ...newRows]));
-      }
+            const allUserOrderIDsExist = userOrderIDs.every((id) =>
+                rowData.some((row) => row.user_id === id)
+            );
 
-      return rowData;
-    } catch (error) {
-      console.error(error);
-    }
-  };
+            if (!allUserOrderIDsExist) {
+                const newRows = await fetchDetailsForMissingUserOrderIDs(userOrderIDs);
+                dispatch(setGridData([...rowData, ...newRows]));
+            }
+
+            return rowData;
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
   const fetchDetailsForMissingUserOrderIDs = async (userOrderIDs) => {
     const userOrderMeta = {
@@ -88,6 +97,7 @@ const Data = ({ product_id }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+          Authorization: 'Bearer geeboh7Jeengie8uS1chaiqu',
       },
       body: JSON.stringify(userOrderMeta),
     });
