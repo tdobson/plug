@@ -1,27 +1,24 @@
-import React, { useState, useCallback, useContext } from 'react';
-import { Link, useLocation } from 'wouter';
-import CheckIn from '../pages/checkin';
-import { DataContext } from '../dataContext';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Data from '../components/data.jsx';
-
+import { setSelectedRow } from '../components/actions.jsx';
 
 export default function Info() {
-  const { setSelectedRow } = useContext(DataContext); // Get the setSelectedRow function from the data context
+    const dispatch = useDispatch();
+    const selectedRow = useSelector((state) => state.selectedRow);
 
-  const handleRowClick = (rowData) => {
-    setSelectedRow(rowData); // Update the selected row in the data context
-  };
+    const handleRowClick = (rowData) => {
+        dispatch(setSelectedRow(rowData));
+    };
 
-  return (
-    <>
-      <h1 className="title">Info!</h1>
-      <div>
-        <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
-          <Data product_id={13915} handleRowClick={handleRowClick} />
-        </div>
-      </div>
-
-
-    </>
-  );
+    return (
+        <>
+            <h1 className="title">Info!</h1>
+            <div>
+                <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
+                    <Data product_id={13915} handleRowClick={handleRowClick} />
+                </div>
+            </div>
+        </>
+    );
 }

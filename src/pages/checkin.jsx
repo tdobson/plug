@@ -1,7 +1,8 @@
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 export default function CheckIn() {
-    const selectedRow = useSelector(state => state.selectedRow);
+    const selectedRow = useSelector((state) => state.selectedRow);
 
     return (
         <>
