@@ -3,7 +3,9 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedRow, setGridData } from './actions.jsx';
+import { setSelectedRow, setGridData, setAPIData } from './actions.jsx';
+
+const authToken = "geeboh7Jeengie8uS1chaiqu"
 
 const Data = ({ product_id }) => {
     const dispatch = useDispatch();
@@ -46,7 +48,7 @@ const Data = ({ product_id }) => {
             // Add your authentication key to the headers
             const headers = {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer geeboh7Jeengie8uS1chaiqu',
+                Authorization: 'Bearer ' + authToken,
             };
 
             const response = await fetch(
@@ -72,71 +74,74 @@ const Data = ({ product_id }) => {
         }
     };
 
-  const fetchDetailsForMissingUserOrderIDs = async (userOrderIDs) => {
-    const userOrderMeta = {
-      product_id,
-      user_order_ids: userOrderIDs,
-      user_meta_keys: [
-        'last_name',
-        'stats_attendance_attended_cached',
-        'skills-belaying',
-        'first_name',
-        'scores_attendance_reliability_score_cached',
-        'scores_volunteer_reliability_score_cached',
-        'scores_volunteer_value_cached',
-        'admin-can-you-help',
-        'nickname',
-        'climbing-indoors-leading-grades',
-        'climbing-indoors-toproping-grades',
-        'climbing-indoors-skills-passing-on',
-      ],
-      order_meta_keys: ['cc_attendance', 'cc_volunteer', 'cc_volunteer_attendance'],
+    const fetchDetailsForMissingUserOrderIDs = async (userOrderIDs) => {
+        const userOrderMeta = {
+            product_id,
+            user_order_ids: userOrderIDs,
+            user_meta_keys: [
+                'last_name',
+                'stats_attendance_attended_cached',
+                'skills-belaying',
+                'first_name',
+                'scores_attendance_reliability_score_cached',
+                'scores_volunteer_reliability_score_cached',
+                'scores_volunteer_value_cached',
+                'admin-can-you-help',
+                'nickname',
+                'climbing-indoors-leading-grades',
+                'climbing-indoors-toproping-grades',
+                'climbing-indoors-skills-passing-on',
+            ],
+            order_meta_keys: ['cc_attendance', 'cc_volunteer', 'cc_volunteer_attendance'],
+        };
+
+        const postResponse = await fetch(`https://www.climbingclan.com/wp-json/wp-api/v1/user-order-meta`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + authToken,
+            },
+            body: JSON.stringify(userOrderMeta),
+        });
+
+        const result = await postResponse.json();
+        dispatch(setAPIData(result)); // Dispatch the API data to the store
+        const newRows = flattenData(result);
+
+
+        return newRows;
     };
 
-    const postResponse = await fetch(`https://www.climbingclan.com/wp-json/wp-api/v1/user-order-meta`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-          Authorization: 'Bearer geeboh7Jeengie8uS1chaiqu',
-      },
-      body: JSON.stringify(userOrderMeta),
-    });
+    const flattenData = (result) => {
+        const flattenedData = Object.entries(result).map(([user_id, data]) => {
+            return {
+                user_id,
+                ...data.user_meta,
+                ...data.order_meta,
+            };
+        });
+        return flattenedData;
+    };
 
-    const result = await postResponse.json();
-    const newRows = flattenData(result);
-    return newRows;
-  };
+    useEffect(() => {
+        fetchData();
+    }, [product_id]);
 
-  const flattenData = (result) => {
-    const flattenedData = Object.entries(result).map(([user_id, data]) => {
-      return {
-        user_id,
-        ...data.user_meta,
-        ...data.order_meta,
-      };
-    });
-    return flattenedData;
-  };
+    const handleRowClick = (rowData) => {
+        dispatch(setSelectedRow(rowData));
+    };
 
-  useEffect(() => {
-    fetchData();
-  }, [product_id]);
-
-  const handleRowClick = (rowData) => {
-    dispatch(setSelectedRow(rowData));
-  };
-
-  return (
-      <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
-        <AgGridReact
-            rowData={rowData}
-            columnDefs={columnDefs}
-            defaultColDef={defaultColDef}
-            animateRows={true}
-            rowSelection="multiple"
-        />
-      </div>
-  );
+    return (
+        <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
+            <AgGridReact
+                rowData={rowData}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                animateRows={true}
+                rowSelection="multiple"
+            />
+        </div>
+    );
 };
 
 export default Data;
