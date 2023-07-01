@@ -42,6 +42,8 @@ function get_user_order_meta( $request ) {
 
         // Combine user meta and order meta fields
         $user_order_meta[ $user_id ] = array(
+            'user_id' => $user_id,
+            'order_id' => $order_id,
             'user_meta' => $user_meta,
             'order_meta' => $order_meta,
         );
@@ -50,6 +52,7 @@ function get_user_order_meta( $request ) {
     // Return the user and order meta fields as a JSON response
     return rest_ensure_response( $user_order_meta );
 }
+
 
 // Add permission callback function to authenticate the request
 function authenticate_request_rest($request)
