@@ -3,7 +3,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { useDispatch, useSelector } from 'react-redux';
-import {setSelectedRow, setGridData, setAPIData, setSelectedID, setEventID} from './actions.jsx';
+import { setSelectedRow, setGridData, setAPIData, setSelectedID } from './actions.jsx';
 import { Button, Modal, Box, Typography } from '@mui/material';
 
 const authToken = "geeboh7Jeengie8uS1chaiqu";
@@ -22,7 +22,7 @@ const Data = ({ product_id }) => {
             {
                 field: 'actions',
                 headerName: 'Actions',
-                cellRendererFramework: (params) => (
+                cellRenderer: (params) => (
                     <Button onClick={() => handleRowClick(params.data)}>Check In</Button>
                 ),
             },
@@ -123,32 +123,18 @@ const Data = ({ product_id }) => {
     }, [product_id]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const [selectedUserId, setSelectedUserId] = useState(null);
     const [selectedData, setSelectedData] = useState(null);
-    const [modalData, setModalData] = useState(null);
 
     useEffect(() => {
-        if (rowData && rowData.length > 0) {
-            setSelectedUserId(rowData[0].user_id);
-
-            setSelectedData(eventAttendees[rowData[0].user_id]);
+        if (selectedRow) {
+            setSelectedData(eventAttendees[selectedRow.user_id]);
         }
-    }, [rowData, eventAttendees]);
-
-
-    useEffect(() => {
-        setModalData(selectedData);
-    }, [selectedData]);
+    }, [selectedRow, eventAttendees]);
 
     const handleRowClick = (rowData) => {
         dispatch(setSelectedRow(rowData));
-        dispatch(setSelectedID(selectedUserId));
         setIsModalOpen(true);
     };
-
-
-
 
     const handleModalClose = () => {
         setIsModalOpen(false);
@@ -182,16 +168,16 @@ const Data = ({ product_id }) => {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Modal Content
                     </Typography>
-                    {modalData && (
+                    {selectedData && (
                         <>
                             <Typography id="modal-modal-description">
-                                First Name: {modalData.user_meta.first_name}
+                                First Name: {selectedData.user_meta.first_name}
                             </Typography>
                             <Typography id="modal-modal-description">
-                                Last Name: {modalData.user_meta.last_name}
+                                Last Name: {selectedData.user_meta.last_name}
                             </Typography>
                             <Typography id="modal-modal-description">
-                                Cabbage: {modalData.user_meta.nickname}
+                                Cabbage: {selectedData.user_meta.nickname}
                             </Typography>
                         </>
                     )}
