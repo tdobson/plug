@@ -1,9 +1,10 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from 'react-dom/client';
+
 import App from "./app.jsx";
-import {HelmetProvider} from 'react-helmet-async';
-import {DevSupport} from "@react-buddy/ide-toolbox";
-import {ComponentPreviews, useInitial} from "./dev";
+import { HelmetProvider } from 'react-helmet-async';
+import { DevSupport } from "@react-buddy/ide-toolbox";
+import { ComponentPreviews, useInitial } from "./dev";
 
 /**
  * Root of react site
@@ -13,15 +14,14 @@ import {ComponentPreviews, useInitial} from "./dev";
  */
 
 // Render the site https://reactjs.org/docs/react-dom.html#render
-ReactDOM.render(
+
+const root = createRoot(document.getElementById("root"));
+root.render(
     <React.StrictMode>
         <HelmetProvider>
-            <DevSupport ComponentPreviews={ComponentPreviews}
-                        useInitialHook={useInitial}
-            >
-                <App/>
+            <DevSupport ComponentPreviews={ComponentPreviews} useInitialHook={useInitial}>
+                <App />
             </DevSupport>
         </HelmetProvider>
-    </React.StrictMode>,
-    document.getElementById("root")
+    </React.StrictMode>
 );
