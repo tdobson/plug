@@ -6,7 +6,7 @@ import { Button } from '@mui/material';
 
 const GridComponent = ({ rowData, columnDefs, defaultColDef, handleRowClick }) => {
     return (
-        <div className="ag-theme-alpine" style={{ width: '100%', height: 500 }}>
+        <div className="ag-theme-alpine" style={{ width: 1100, height: 500 }}>
             <AgGridReact
                 rowData={rowData}
                 columnDefs={columnDefs}

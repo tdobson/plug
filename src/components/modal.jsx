@@ -29,7 +29,7 @@ const ModalComponent = ({ isModalOpen, handleModalClose, handleCheckIn, selected
                             Last Name: {selectedData.user_meta.last_name}
                         </Typography>
                         <Typography id="modal-modal-description">
-                            Cabbage: {selectedData.user_meta.nickname}
+                            Facebook Name: {selectedData.user_meta.nickname}
                         </Typography>
                         <Button onClick={handleCheckIn}>Check In</Button>
                         <Button onClick={handleModalClose}>Close & don't check in</Button>
