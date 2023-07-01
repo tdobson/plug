@@ -13,6 +13,7 @@ const Data = ({ product_id }) => {
     const rowData = useSelector((state) => state.gridData);
     const selectedRow = useSelector((state) => state.selectedRow);
     const eventAttendees = useSelector((state) => state.apiData); // Add this line
+    const selectedUserId = useSelector((state) => state.selectedID);
 
     const columnDefs = useMemo(
         () => [
@@ -128,6 +129,7 @@ const Data = ({ product_id }) => {
     useEffect(() => {
         if (selectedRow) {
             setSelectedData(eventAttendees[selectedRow.user_id]);
+            dispatch(setSelectedID(selectedRow.user_id));
         }
     }, [selectedRow, eventAttendees]);
 
@@ -138,6 +140,10 @@ const Data = ({ product_id }) => {
 
     const handleModalClose = () => {
         setIsModalOpen(false);
+    };
+
+    const handleCheckIn = () => {
+        console.log("Mark checked in", selectedUserId);
     };
 
     const modalStyle = {
@@ -166,7 +172,7 @@ const Data = ({ product_id }) => {
             <Modal open={isModalOpen} onClose={handleModalClose}>
                 <Box sx={modalStyle}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Modal Content
+                        Check In
                     </Typography>
                     {selectedData && (
                         <>
@@ -179,6 +185,8 @@ const Data = ({ product_id }) => {
                             <Typography id="modal-modal-description">
                                 Cabbage: {selectedData.user_meta.nickname}
                             </Typography>
+                            <Button onClick={handleCheckIn}>Check In</Button>
+                            <Button onClick={handleModalClose}>Close & don't check in</Button>
                         </>
                     )}
                     <Button onClick={handleModalClose}>Close</Button>

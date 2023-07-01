@@ -11,7 +11,7 @@ export default function Info() {
 
     return (
         <>
-            <h1 className="title">Info!</h1>
+
             <div>
                 <div className="ag-theme-alpine" style={{ width: 1000, height: 500 }}>
                     <Data product_id={13915}  />
