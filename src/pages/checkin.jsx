@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedRow, setAPIData, setGridData } from '../components/actions.jsx';
 import Data from '../components/data.jsx';
 import { Modal } from '@mui/material';
-import { useState } from 'react';
+
 
 export default function CheckIn() {
     const selectedRow = useSelector((state) => state.selectedRow);
