@@ -8,7 +8,17 @@ export const setGridData = (data) => ({
     payload: data,
 });
 
+export const setEventID = (event_id) => ({
+    type: 'SET_EVENT_ID',
+    payload: event_id,
+});
+
 export const setAPIData = (apiData) => ({
     type: 'SET_API_DATA',
     payload: apiData,
+});
+
+export const setSelectedID = (selectedUserId) => ({
+    type: 'SET_SELECTED_ID',
+    payload: selectedUserId,
 });

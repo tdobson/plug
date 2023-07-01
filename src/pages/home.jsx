@@ -2,7 +2,9 @@ import React from 'react';
 import { animated } from 'react-spring';
 import { useWiggle } from '../hooks/wiggle';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSelectedRow } from '../components/actions.jsx';
+import { setSelectedRow,setAPIData,setGridData } from '../components/actions.jsx';
+import Data from '../components/data.jsx';
+
 
 const strings = [
     'Hello React',

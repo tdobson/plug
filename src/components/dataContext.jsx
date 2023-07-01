@@ -4,6 +4,9 @@ import { createStore } from 'redux';
 const initialState = {
     selectedRow: null,
     gridData: [],
+    apiData: {"empty":true},
+    eventID: 0,
+    selectedID: 0
 };
 
 // Define reducer
@@ -19,9 +22,25 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 gridData: action.payload,
             };
+        case 'SET_API_DATA':
+            return {
+                ...state,
+                apiData: action.payload,
+            };
+        case 'SET_SELECTED_ID':
+            return {
+                ...state,
+                selectedID: action.payload,
+            };
+        case 'SET_EVENT_ID':
+            return {
+                ...state,
+                eventID: action.payload,
+            };
         default:
             return state;
     }
+
 };
 
 // Create Redux store

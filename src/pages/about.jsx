@@ -1,6 +1,8 @@
 // pages/about.jsx
 import React from 'react';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedRow,setAPIData,setGridData } from '../components/actions.jsx';
+import Data from '../components/data.jsx';
 export default function About() {
     return (
         <div className="page">
