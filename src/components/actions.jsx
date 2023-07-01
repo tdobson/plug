@@ -13,9 +13,9 @@ export const setEventID = (event_id) => ({
     payload: event_id,
 });
 
-export const setAPIData = (apiData) => ({
+export const setAPIData = (data) => ({
     type: 'SET_API_DATA',
-    payload: apiData,
+    payload: data,
 });
 
 export const setSelectedID = (selectedUserId) => ({

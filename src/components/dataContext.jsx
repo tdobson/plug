@@ -4,7 +4,7 @@ import { createStore } from 'redux';
 const initialState = {
     selectedRow: null,
     gridData: [],
-    apiData: {"empty":true},
+    apiData: {},
     eventID: 0,
     selectedID: 0
 };
@@ -23,6 +23,7 @@ const reducer = (state = initialState, action) => {
                 gridData: action.payload,
             };
         case 'SET_API_DATA':
+            console.log('SET_API_DATA action dispatched:', action.payload);
             return {
                 ...state,
                 apiData: action.payload,

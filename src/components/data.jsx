@@ -3,7 +3,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { useDispatch, useSelector } from 'react-redux';
-import {setSelectedRow, setGridData, setAPIData, setSelectedID} from './actions.jsx';
+import {setSelectedRow, setGridData, setAPIData, setSelectedID, setEventID} from './actions.jsx';
 import { Button, Modal, Box, Typography } from '@mui/material';
 
 const authToken = "geeboh7Jeengie8uS1chaiqu";
@@ -12,7 +12,7 @@ const Data = ({ product_id }) => {
     const dispatch = useDispatch();
     const rowData = useSelector((state) => state.gridData);
     const selectedRow = useSelector((state) => state.selectedRow);
-    const apiData = useSelector((state) => state.apiData);
+    const eventAttendees = useSelector((state) => state.apiData); // Add this line
 
     const columnDefs = useMemo(
         () => [
@@ -59,13 +59,9 @@ const Data = ({ product_id }) => {
 
             if (!allUserOrderIDsExist) {
                 const result = await fetchDetailsForMissingUserOrderIDs(userOrderIDs);
-                console.log(result)
-                dispatch(setAPIData("cabbage"));
-
-                dispatch(setAPIData(result));
                 const newRows = flattenData(result);
+                dispatch(setAPIData(result));
                 dispatch(setGridData([...rowData, ...newRows]));
-
                 return [...rowData, ...newRows]; // Return the updated rowData
             }
 
@@ -127,19 +123,32 @@ const Data = ({ product_id }) => {
     }, [product_id]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [selectedUserId, setSelectedUserId] = useState(null);
+    const [selectedData, setSelectedData] = useState(null);
     const [modalData, setModalData] = useState(null);
 
-    const handleRowClick = (rowData) => {
-        const selectedUserId = rowData.user_id;
-        console.log(apiData); // Log the apiData
-        console.log(selectedUserId); // Log the selectedUserId
-        const selectedData = apiData[selectedUserId];
-        console.log(selectedData); // Log the selectedData
-        dispatch(setSelectedRow(rowData)); //becoming redundant?
-        dispatch(setSelectedID(selectedUserId));
+    useEffect(() => {
+        if (rowData && rowData.length > 0) {
+            setSelectedUserId(rowData[0].user_id);
+
+            setSelectedData(eventAttendees[rowData[0].user_id]);
+        }
+    }, [rowData, eventAttendees]);
+
+
+    useEffect(() => {
         setModalData(selectedData);
+    }, [selectedData]);
+
+    const handleRowClick = (rowData) => {
+        dispatch(setSelectedRow(rowData));
+        dispatch(setSelectedID(selectedUserId));
         setIsModalOpen(true);
     };
+
+
+
 
     const handleModalClose = () => {
         setIsModalOpen(false);
