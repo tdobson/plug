@@ -1,43 +1,61 @@
 import React from 'react';
-import { Box, Button, Modal, Typography } from '@mui/material';
+import { Button, Dialog, Slide, AppBar, Toolbar, IconButton, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const ModalComponent = ({ isModalOpen, handleModalClose, handleCheckIn, selectedData }) => {
-    const modalStyle = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-    };
-
     return (
-        <Modal open={isModalOpen} onClose={handleModalClose}>
-            <Box sx={modalStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Check In
-                </Typography>
+        <Dialog
+            fullScreen
+            open={isModalOpen}
+            onClose={handleModalClose}
+            TransitionComponent={Transition}
+        >
+            <AppBar sx={{ position: 'relative' }}>
+                <Toolbar>
+                    <IconButton edge="start" color="inherit" onClick={handleModalClose} aria-label="close">
+                        <CloseIcon />
+                    </IconButton>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                        Check In
+                    </Typography>
+                    <Button autoFocus color="inherit" onClick={handleCheckIn}>
+                        Check In
+                    </Button>
+                </Toolbar>
+            </AppBar>
+            <List>
                 {selectedData && (
                     <>
-                        <Typography id="modal-modal-description">
-                            First Name: {selectedData.user_meta.first_name}
-                        </Typography>
-                        <Typography id="modal-modal-description">
-                            Last Name: {selectedData.user_meta.last_name}
-                        </Typography>
-                        <Typography id="modal-modal-description">
-                            Facebook Name: {selectedData.user_meta.nickname}
-                        </Typography>
-                        <Button onClick={handleCheckIn}>Check In</Button>
-                        <Button onClick={handleModalClose}>Close & don't check in</Button>
+                        <ListItem>
+                            <ListItemText primary="First Name" secondary={selectedData.user_meta.first_name} />
+                        </ListItem>
+                        <Divider />
+                        <ListItem>
+                            <ListItemText primary="Last Name" secondary={selectedData.user_meta.last_name} />
+                        </ListItem>
+                        <Divider />
+                        <ListItem>
+                            <ListItemText primary="Facebook Name" secondary={selectedData.user_meta.nickname} />
+                        </ListItem>
+                        {selectedData.order_meta.cc_volunteer != "none" && ( <>
+                        <Divider />
+                        <ListItem>
+                            <ListItemText primary="Stats: Attendance Attended Cached" secondary={selectedData.order_meta.cc_volunteer} />
+                        </ListItem> </>)}
+                        <Divider />
+                        <ListItem>
+                            <ListItemText primary="Skills: Belaying" secondary={selectedData.user_meta['skills-belaying']} />
+                        </ListItem>
+                        <Divider />
+                        {/* Add more ListItems for other properties as needed */}
                     </>
                 )}
-                <Button onClick={handleModalClose}>Close</Button>
-            </Box>
-        </Modal>
+            </List>
+        </Dialog>
     );
 };
 

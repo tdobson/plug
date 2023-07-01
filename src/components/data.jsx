@@ -22,7 +22,7 @@ const Data = ({ product_id }) => {
                 field: 'actions',
                 headerName: 'Actions',
                 cellRenderer: (params) => (
-                    <Button onClick={() => handleRowClick(params.data)}>Check In</Button>
+                    <Button variant="contained" size="medium" onClick={() => handleRowClick(params.data)}>Check In</Button>
                 ),
             },
         ],
