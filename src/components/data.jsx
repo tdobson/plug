@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, setGridData, setAPIData, setSelectedID } from './actions.jsx';
 import ModalComponent from './modal.jsx';
-import GridComponent from './grid.jsx';
+import { List, ListItem, ListItemText, Divider } from '@mui/material';
 import { fetchUserOrderIDs, fetchDetailsForMissingUserOrderIDs, sendOrderMeta } from '../api.jsx';
-import { Button } from '@mui/material';
 
 const Data = ({ product_id }) => {
     const dispatch = useDispatch();
@@ -12,26 +11,6 @@ const Data = ({ product_id }) => {
     const selectedRow = useSelector((state) => state.selectedRow);
     const eventAttendees = useSelector((state) => state.apiData);
     const selectedUserId = useSelector((state) => state.selectedID);
-
-    const columnDefs = useMemo(
-        () => [
-            { field: 'first_name', headerName: 'First Name' },
-            { field: 'last_name', headerName: 'Last Name' },
-            { field: 'stats_attendance_indoor_wednesday_attended_cached', headerName: 'Attended' },
-            {
-                field: 'actions',
-                headerName: 'Actions',
-                cellRenderer: (params) => (
-                    <Button variant="contained" size="medium" onClick={() => handleRowClick(params.data)}>Check In</Button>
-                ),
-            },
-        ],
-        []
-    );
-
-    const defaultColDef = useMemo(() => ({
-        sortable: true,
-    }), []);
 
     const fetchData = async () => {
         try {
@@ -58,7 +37,6 @@ const Data = ({ product_id }) => {
             console.error(error);
         }
     };
-
 
     const flattenData = (result) => {
         const flattenedData = Object.entries(result).map(([user_id, data]) => ({
@@ -94,21 +72,21 @@ const Data = ({ product_id }) => {
 
     const handleCheckIn = async () => {
         console.log("Mark checked in ", eventAttendees[selectedUserId].order_id);
-        eventAttendees[selectedUserId].order_meta.cc_attendance = "attended";
+        eventAttendees[selectedUserId].order_meta.cc_attendance = "lol";
         const response = await sendOrderMeta(eventAttendees[selectedUserId]);
         console.log(response); // Handle the response data as needed
         handleModalClose();
     };
 
-
     return (
         <div className="data-container">
-            <GridComponent
-                rowData={rowData}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-                handleRowClick={handleRowClick}
-            />
+            <List>
+                {rowData.map((row) => (
+                    <ListItem key={row.user_id} button onClick={() => handleRowClick(row)}>
+                        <ListItemText primary={`${row.first_name} ${row.last_name}`} secondary={`aka ${row.nickname}`} />
+                    </ListItem>
+                ))}
+            </List>
             <ModalComponent
                 isModalOpen={isModalOpen}
                 handleModalClose={handleModalClose}
@@ -117,7 +95,6 @@ const Data = ({ product_id }) => {
             />
         </div>
     );
-
 };
 
 export default Data;

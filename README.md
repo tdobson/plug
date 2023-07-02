@@ -47,9 +47,6 @@ React defines site components in [JSX](https://reactjs.org/docs/introducing-jsx.
 ← `src/pages/`: These files include components that specify the content of the Home and About pages. Each one is defined as a function and referenced in `router.jsx`. The content is built into the page outline specified in `app.jsx`.
 
 ← `src/pages/about.jsx`: The content of the About page, defined as a component function.
-
-← `src/pages/home.jsx` The content of the Home page, also defined as a component function. The page includes the animated effect on hover, and title change effect on click (which is also a handy demo of using state data in React).
-
 ## Try this next 🏗️
 
 Take a look in `TODO.md` for next steps you can try out in your new site!
