@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, setGridData, setAPIData, setSelectedID } from './actions.jsx';
 import ModalComponent from './modal.jsx';
 import GridComponent from './grid.jsx';
-import { fetchUserOrderIDs, fetchDetailsForMissingUserOrderIDs } from '../api.jsx';
+import { fetchUserOrderIDs, fetchDetailsForMissingUserOrderIDs, sendOrderMeta } from '../api.jsx';
 import { Button } from '@mui/material';
 
 const Data = ({ product_id }) => {
@@ -92,18 +92,22 @@ const Data = ({ product_id }) => {
         setIsModalOpen(false);
     };
 
-    const handleCheckIn = () => {
-        console.log("Mark checked in", selectedUserId);
+    const handleCheckIn = async () => {
+        console.log("Mark checked in ", eventAttendees[selectedUserId].order_id);
+        eventAttendees[selectedUserId].order_meta.cc_attendance = "attended";
+        const response = await sendOrderMeta(eventAttendees[selectedUserId]);
+        console.log(response); // Handle the response data as needed
+        handleModalClose();
     };
 
+
     return (
-        <div>
+        <div className="data-container">
             <GridComponent
                 rowData={rowData}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
                 handleRowClick={handleRowClick}
-
             />
             <ModalComponent
                 isModalOpen={isModalOpen}
@@ -113,6 +117,7 @@ const Data = ({ product_id }) => {
             />
         </div>
     );
+
 };
 
 export default Data;

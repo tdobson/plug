@@ -5,8 +5,13 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { Button } from '@mui/material';
 
 const GridComponent = ({ rowData, columnDefs, defaultColDef, handleRowClick }) => {
+    const gridStyle = {
+        width: '100%',
+        height: '90vh', // Set the height to 100vh for full screen
+    };
+
     return (
-        <div className="ag-theme-alpine" style={{ width: 1100, height: 500 }}>
+        <div className="ag-theme-alpine" style={gridStyle}>
             <AgGridReact
                 rowData={rowData}
                 columnDefs={columnDefs}
