@@ -1,57 +1,79 @@
-# Hello React!
+neoClan
+=============
 
-This project contains a foundation for building and learning about React apps. The site includes two routes showing how navigation works in a single page app. We manage the page head and body using a standard React flow. The homepage features a click effect that demonstrates using state, and an animation you can try out yourself by following the steps in `TODO.md`. 💫
+neoClan is a React-based checkin app providing functionality for attendance at sports events. It provides a dynamic table interface using Mantine a custom WordPress API which is attached.
 
-[React](https://reactjs.org/) is a popular UI library for building web apps. [Vite](https://vitejs.dev/) is a powerful tool for building javascript apps that bundles all of your code and shows immediate changes while you're editing.
+Project Overview
+----------------
 
-_While you're in the editor working, Glitch is running your `start` script in the background (`vite dev`). The site will be in dev mode and you'll see your changes happen ✨ immediately in the preview window. Once you close the editor window and your app goes to sleep, Glitch runs the `build` script and Vite builds your app for modern browsers._
+neoClan showcases a modular and scalable structure, utilizing various libraries for UI components, state management, and testing. The application allows users to view, create, update, and delete solar PV install information through an intuitive table interface.
 
-_Last updated: 03 May 2023_
+Key Dependencies
+----------------
 
-## Prerequisites
+-   **React**: A JavaScript library for building user interfaces.
+-   **Next.js**: A React framework for applications.
+-   **Mantine**: A suite of React components and hooks for building user interfaces.
+-   **Mantine React Table**: A powerful and customizable table component for React.
+-   **React Query**: A library for managing and synchronizing server state in React applications.
+-   **TypeScript**: A typed superset of JavaScript that compiles to plain JavaScript.
+-   **Jest** and **Testing Library**: Tools for writing and running tests for React components.
 
-You'll get best use out of this project if you're familiar with basic JavaScript. This project is a static site, which means that the server builds the site from the content of the `src` folder while you're developing it, then it's able to serve the pages super quickly when the user requests them.
+Project Structure
+-----------------
 
-## What's in this project?
+The project follows a modular and scalable structure, with the following main directories and files:
 
-← `README.md`: That’s this file, where you can tell people what your cool website does and how you built it.
+-   **`app/`**: Contains the Next.js app structure.
+  -   **`checkin/`**: Contains the checkin page and related components.
+    -   **`CheckInTableWrapper.tsx`**: A client component that wraps the CheckInTableWrapper and handles data fetching and mutations.
+    -   **`page.tsx`**: The server component that renders the Checkins page.
+  -   **`layout.tsx`**: Defines the root layout for the application.
+  -   **`page.tsx`**: The main page of the application.
+  -   **`QueryProvider.tsx`**: Provides the React Query client to the application.
+-   **`components/`**: Contains reusable UI components for the application.
+  -   **`ColorSchemeToggle/`**: Allows toggling between light and dark color schemes.
+  -   **`ElevationDetails/`**: Displays detailed information about a selected elevation.
+  -   **`ElevationTable/`**: Renders the table for managing checkins.
+  -   **`Welcome/`**: Displays a welcome message on the main page.
+-   **`hooks/`**: Contains custom React hooks.
+  -   **`useCheckin.ts`**: A custom hook for managing checkin data using React Query.
+-   **`services/`**: Contains API service functions for interacting with the Snowy API.
+  -   **`checkinsService.ts`**: Provides functions for fetching, creating, updating, and deleting checkins.
+-   **`types/`**: Contains TypeScript type definitions for the application's data models.
+  -   **`elevation.ts`**: Defines the Checkin interface.
+-   **`utils/`**: Contains utility functions and modules.
+  -   **`api.ts`**: Defines the API request function and API service functions for interacting with the Snowy API.
+-   **`theme.ts`**: Defines the Mantine theme configuration for the application.
+-   **`next.config.mjs`**: Configuration file for Next.js.
+-   **`postcss.config.cjs`**: Configuration file for PostCSS.
+-   **`tsconfig.json`**: TypeScript configuration file.
+-   **`jest.config.cjs`** and **`jest.setup.cjs`**: Configuration files for Jest testing framework.
 
-← `index.html`: This is the main page template React uses to build your site–it imports `index.jsx` to kick things off. When you're ready to share your site or add a custom domain, change SEO/meta settings in here.
+Application Flow
+----------------
 
-← `src/`: This folder contains all the files React will use to build your site.
+1.  The user navigates to the Elevations page (`app/elevations/page.tsx`).
+2.  The `ElevationTableWrapper` component (`app/elevations/ElevationTableWrapper.tsx`) fetches the elevations data from the Snowy API using the `useQuery` hook from React Query.
+3.  The `ElevationTable` component (`components/ElevationTable/ElevationTable.tsx`) renders the table with the fetched elevations data.
+4.  The user can perform CRUD operations on the elevations:
+  -   Create: The user can click the "Create New Elevation" button to open a modal and fill in the details for a new elevation. The `createMutation` from `ElevationTableWrapper` sends a POST request to the Snowy API to create the new elevation.
+  -   Read: The user can view the elevations in the table and click on a row to see more details in the `ElevationDetails` component (`components/ElevationDetails/ElevationDetails.tsx`).
+  -   Update: The user can click the edit icon on a row to open a modal and update the elevation details. The `updateMutation` from `ElevationTableWrapper` sends a PUT request to the Snowy API to update the elevation.
+  -   Delete: The user can click the delete icon on a row to delete an elevation. The `deleteMutation` from `ElevationTableWrapper` sends a DELETE request to the Snowy API to delete the elevation.
+5.  The `useElevations` hook (`hooks/useElevations.ts`) provides the necessary data fetching and mutation functions for managing elevations data using React Query.
+6.  The `elevationsService` (`services/elevationsService.ts`) acts as an intermediary between the application and the Snowy API, providing functions for fetching, creating, updating, and deleting elevations.
+7.  The `api` utility module (`utils/api.ts`) handles the API requests and error handling, making use of the Mantine notifications system to display error messages.
 
-### Working in the `src/` folder 📁
+Running the Project
+-------------------
 
-React defines site components in [JSX](https://reactjs.org/docs/introducing-jsx.html), an extended version of JavaScript, so you'll see lots of `.jsx` files in the project.
+1.  Install dependencies: `npm install`
+2.  Start the development server: `npm run dev`
+3.  Open the application in your browser at `http://localhost:3000`
 
-← `src/index.jsx`: This is the root of your React app. The index script is imported in the site home template `index.html`. If you add libraries like [chakra-ui](https://chakra-ui.com) or [redux](https://react-redux.js.org), you'll insert their providers here. The `<HelmetProvider`> is an example of a provider you'd use.
+Testing
+-------
 
-← `src/app.jsx`: The base for defining your React app, this script imports the components that make up the site content. The `index.jsx` file imports the App script. The router (from [wouter](https://github.com/molefrog/wouter) 🐰) is also imported here.
-
-← `src/styles`: CSS files add styling rules to your content. You have [a lot of](https://vitejs.dev/guide/features.html#css) importing options for CSS including CSS modules if that's your jam.
-
-← `src/components/router.jsx`: One of the most important parts of a single page app is the router. It's how we know what page to show–the code maps the paths to the Home and About components. We're using [Wouter](https://github.com/molefrog/wouter), a tiny minimalist router. You could replace it for something like [React Router](https://reactrouter.com/).
-
-← `src/components/seo.jsx`: When you share your site on social media, you'll want to make sure the meta tags are correct and that you've got an image. All of the settings for this file are in `src/seo.json`.
-
-### Hooks 🪝
-
-← `src/hooks/`: [Hooks](https://reactjs.org/docs/hooks-intro.html) are a powerful way to provide interaction with your app.
-
-← `src/hooks/prefers-reduced-motion.jsx`: For accessibility reasons, some users will indicate in their system settings that they prefer motion effects to be minimized–this allows you to hold off on these effects in such cases.
-
-← `src/hooks/wiggle.jsx`: The wiggle effect animates elements, as you'll see if you hover over the image (or text below it) on the homepage. You can apply the effect anywhere you like in the site as outlined in `TODO.md`.
-
-### Pages 📃
-
-← `src/pages/`: These files include components that specify the content of the Home and About pages. Each one is defined as a function and referenced in `router.jsx`. The content is built into the page outline specified in `app.jsx`.
-
-← `src/pages/about.jsx`: The content of the About page, defined as a component function.
-## Try this next 🏗️
-
-Take a look in `TODO.md` for next steps you can try out in your new site!
-
-**_Want a minimal version of this project to build your own React app? Check out [Blank React](https://glitch.com/edit/#!/remix/glitch-blank-react)!_**
-
-![Glitch](https://cdn.glitch.com/a9975ea6-8949-4bab-addb-8a95021dc2da%2FLogo_Color.svg?v=1602781328576)
+The project includes a testing setup using Jest and Testing Library. To run the tests, use the following command:
 
