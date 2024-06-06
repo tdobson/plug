@@ -1,16 +1,27 @@
 // components/Grid/Grid.tsx
 import React from 'react';
 import { Grid, Text, Badge } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 const GridComponent = ({ rowData, onRowClick }) => {
     const handleRowClick = (rowData) => {
         onRowClick(rowData);
     };
 
+    // Media queries to adjust column span based on screen size
+    const isMobile = useMediaQuery('(max-width: 768px)');
+    const isTablet = useMediaQuery('(max-width: 1024px)');
+
+    const getColSpan = () => {
+        if (isMobile) return 12; // Full width on mobile
+        if (isTablet) return 6; // Two columns on tablets
+        return 4; // Three columns on desktop
+    };
+
     return (
         <Grid>
             {Object.entries(rowData).map(([userId, userData]) => (
-                <Grid.Col key={userId} span={4} onClick={() => handleRowClick(userData)}>
+                <Grid.Col key={userId} span={getColSpan()} onClick={() => handleRowClick(userData)}>
                     <div style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '4px', cursor: 'pointer' }}>
                         <Text weight={500} size="lg" mb={8}>
                             {userData.user_meta.first_name} {userData.user_meta.last_name}

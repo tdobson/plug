@@ -1,0 +1,17 @@
+/* components/Modal/Modal.css */
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.wrap-button {
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.list-item {
+    white-space: normal;
+    word-wrap: break-word;
+}

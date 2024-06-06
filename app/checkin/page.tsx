@@ -33,11 +33,17 @@ const CheckinPage = () => {
     if (isUserOrderIDsError || isUserOrderDetailsError) {
         return <div>Error occurred while fetching user data.</div>;
     }
+    // Sort userOrderDetails by first name
+    const sortedUserOrderDetails = userOrderDetails
+        ? Object.values(userOrderDetails).sort((a, b) =>
+            a.user_meta.first_name.localeCompare(b.user_meta.first_name)
+        )
+        : [];
 
     return (
         <div>
             <h1>Check-in</h1>
-            <GridComponent rowData={userOrderDetails} onRowClick={handleRowClick} />
+            <GridComponent rowData={sortedUserOrderDetails} onRowClick={handleRowClick} />
             <ModalComponent
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

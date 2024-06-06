@@ -88,7 +88,7 @@
                 Authorization: 'Bearer ' + authToken,
             };
 
-            const response = await fetch('https://www.climbingclan.com/wp-json/wp-api/v1/send-order-meta', {
+            const response = await fetch('https://www.climbingclan.com/wp-json/wp-api/v1/update-order-meta', {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify(userOrderMeta),
