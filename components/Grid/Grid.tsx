@@ -16,34 +16,20 @@ const GridComponent = ({ rowData, onRowClick }) => {
                             {userData.user_meta.first_name} {userData.user_meta.last_name}
                         </Text>
                         <Text size="sm" color="dimmed" mb={8}>
-                            Nickname: {userData.user_meta.nickname}
+                            Facebook Name: {userData.user_meta.nickname}
                         </Text>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
                             <Badge color="blue" variant="light">
-                                Attendance: {userData.user_meta.stats_attendance_attended_cached}
+                                Attended: {userData.user_meta.stats_attendance_attended_cached} times
                             </Badge>
-                            <Badge color="green" variant="light">
-                                Belaying: {userData.user_meta['skills-belaying']}
-                            </Badge>
+
                             <Badge color="orange" variant="light">
                                 Attendance Reliability: {userData.user_meta.scores_attendance_reliability_score_cached}%
                             </Badge>
                             <Badge color="grape" variant="light">
-                                Volunteer Reliability: {userData.user_meta.scores_volunteer_reliability_score_cached}%
+                                Volunteering tonight as: {userData.order_meta.cc_volunteer}
                             </Badge>
                         </div>
-                        <Text size="sm" mb={4}>
-                            Can Help With: {userData.user_meta['admin-can-you-help']}
-                        </Text>
-                        <Text size="sm" mb={4}>
-                            Leading Grades: {userData.user_meta['climbing-indoors-leading-grades']}
-                        </Text>
-                        <Text size="sm" mb={4}>
-                            Top Roping Grades: {userData.user_meta['climbing-indoors-toproping-grades']}
-                        </Text>
-                        <Text size="sm">
-                            Skills Passing On: {userData.user_meta['climbing-indoors-skills-passing-on']}
-                        </Text>
                     </div>
                 </Grid.Col>
             ))}
