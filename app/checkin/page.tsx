@@ -3,9 +3,20 @@
 
 import { useFetchUserOrderIDs, useFetchDetailsForMissingUserOrderIDs } from '../../utils/api';
 import GridComponent from '../../components/Grid/Grid'; // Update the import path
+import React, { useState } from 'react';
+import ModalComponent from '../../components/Modal/Modal';
 
 const CheckinPage = () => {
-    const productId = 2118; // Replace with the actual product ID
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedRowData, setSelectedRowData] = useState(null);
+
+    const handleRowClick = (rowData) => {
+        setSelectedRowData(rowData);
+        setIsModalOpen(true);
+    };
+
+    const productId = 20787; // Replace with the actual product ID
     const { data: userOrderIDs, isLoading: isUserOrderIDsLoading, isError: isUserOrderIDsError } = useFetchUserOrderIDs(productId);
 
     const { data: userOrderDetails, isLoading: isUserOrderDetailsLoading, isError: isUserOrderDetailsError } = useFetchDetailsForMissingUserOrderIDs(productId, userOrderIDs || [], {
@@ -26,8 +37,16 @@ const CheckinPage = () => {
     return (
         <div>
             <h1>Check-in</h1>
-            <GridComponent rowData={userOrderDetails} onRowClick={() => {}} />
+            <GridComponent rowData={userOrderDetails} onRowClick={handleRowClick} />
+            <ModalComponent
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                selectedData={selectedRowData}
+                onUpdate={() => {}}
+                onDelete={() => {}}
+            />
         </div>
+
     );
 };
 

@@ -1,6 +1,6 @@
 // components/Modal/Modal.tsx
 import React from 'react';
-import { Dialog, Button, Text, List, Divider } from '@mantine/core';
+import { Modal, Button, Text, List, Divider } from '@mantine/core';
 import { useSendOrderMeta } from '../../utils/api';
 
 const ModalComponent = ({ isOpen, onClose, selectedData, onUpdate, onDelete }) => {
@@ -60,7 +60,7 @@ const ModalComponent = ({ isOpen, onClose, selectedData, onUpdate, onDelete }) =
     };
 
     return (
-        <Dialog opened={isOpen} onClose={onClose} title="Check In">
+        <Modal opened={isOpen} onClose={onClose} title="Check In">
             {selectedData && (
                 <>
                     <Text>
@@ -109,13 +109,13 @@ const ModalComponent = ({ isOpen, onClose, selectedData, onUpdate, onDelete }) =
                         <Divider />
                         {/* Add more List.Items for other properties as needed */}
                     </List>
-                    <Button onClick={() => handleUpdate(selectedData)}>Update</Button>
+                    <Button onClick={() => handleUpdate(selectedData)}>Mark Checked In</Button>
                     <Button color="red" onClick={handleDelete}>
-                        Delete
+                        Mark non-attendance
                     </Button>
                 </>
             )}
-        </Dialog>
+        </Modal>
     );
 };
 
