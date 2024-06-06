@@ -1,12 +1,11 @@
+// components/Modal/Modal.tsx
 import React from 'react';
-import { Button, Dialog, Slide, AppBar, Toolbar, IconButton, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Dialog, Button, Text, List, Divider } from '@mantine/core';
+import { useSendOrderMeta } from '../../utils/api';
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
+const ModalComponent = ({ isOpen, onClose, selectedData, onUpdate, onDelete }) => {
+    const { mutate: sendOrderMeta } = useSendOrderMeta();
 
-const ModalComponent = ({ isModalOpen, handleModalClose, handleCheckIn, selectedData }) => {
     const getSkillBackgroundColor = () => {
         if (!selectedData || !selectedData.user_meta || !selectedData.user_meta['skills-belaying']) {
             return ''; // Return empty string for default background color
@@ -50,75 +49,72 @@ const ModalComponent = ({ isModalOpen, handleModalClose, handleCheckIn, selected
         backgroundColor: getSkillBackgroundColor() || getLastClimbedBackgroundColor(),
     };
 
+    const handleUpdate = async (updatedData) => {
+        await sendOrderMeta(updatedData);
+        onUpdate(updatedData);
+    };
+
+    const handleDelete = async () => {
+        await sendOrderMeta({ ...selectedData, deleted: true });
+        onDelete(selectedData.user_id);
+    };
+
     return (
-        <Dialog fullScreen open={isModalOpen} onClose={handleModalClose} TransitionComponent={Transition}>
-            <AppBar sx={{ position: 'relative' }}>
-                <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={handleModalClose} aria-label="close">
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                        Check In
-                    </Typography>
-                    <Button autoFocus color="inherit" onClick={handleCheckIn}>
-                        Check In
-                    </Button>
-                </Toolbar>
-            </AppBar>
-            <List>
-                {selectedData && (
-                    <>
-                        <ListItem>
-                            <ListItemText
-                                primary={selectedData.user_meta.first_name + ' ' + selectedData.user_meta.last_name}
-                                secondary={'aka ' + selectedData.user_meta.nickname}
-                            />
-                        </ListItem>
+        <Dialog opened={isOpen} onClose={onClose} title="Check In">
+            {selectedData && (
+                <>
+                    <Text>
+                        {selectedData.user_meta.first_name} {selectedData.user_meta.last_name} (aka{' '}
+                        {selectedData.user_meta.nickname})
+                    </Text>
+                    <List>
                         {selectedData.order_meta.cc_volunteer !== 'none' && (
                             <>
                                 <Divider />
-                                <ListItem>
-                                    <ListItemText
-                                        primary="You know what you're doing to help with"
-                                        secondary={selectedData.order_meta.cc_volunteer + ' this time?'}
-                                    />
-                                </ListItem>
+                                <List.Item>
+                                    <Text>
+                                        You know what you're doing to help with {selectedData.order_meta.cc_volunteer}{' '}
+                                        this time?
+                                    </Text>
+                                </List.Item>
                             </>
                         )}
-                        {selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached == "0" && (
-                                <>
-                                    <Divider />
-                                    <ListItem>
-                                        <ListItemText
-                                            primary="First time attendee"
-                                            secondary={selectedData.user_meta.first_name + ' is here for the first time'}
-                                        />
-                                    </ListItem>
-                                </>
-                            )}
+                        {selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached === '0' && (
+                            <>
+                                <Divider />
+                                <List.Item>
+                                    <Text>
+                                        First time attendee - {selectedData.user_meta.first_name} is here for the first
+                                        time
+                                    </Text>
+                                </List.Item>
+                            </>
+                        )}
                         <Divider />
-                        <ListItem style={listItemStyle}>
-                            <ListItemText
-                                primary="This is the colour wristband to give"
-                                secondary={selectedData.user_meta['skills-belaying']}
-                            />
-                        </ListItem>
+                        <List.Item style={listItemStyle}>
+                            <Text>
+                                This is the color wristband to give: {selectedData.user_meta['skills-belaying']}
+                            </Text>
+                        </List.Item>
                         <Divider />
                         {getLastClimbedBackgroundColor() === 'lightblue' && (
                             <>
-                                <ListItem style={listItemStyle}>
-                                    <ListItemText
-                                        primary="Good to have you back"
-                                        secondary="It's been some time since you last climbed with us"
-                                    />
-                                </ListItem>
+                                <List.Item style={listItemStyle}>
+                                    <Text>
+                                        Good to have you back - It's been some time since you last climbed with us
+                                    </Text>
+                                </List.Item>
                             </>
                         )}
                         <Divider />
-                        {/* Add more ListItems for other properties as needed */}
-                    </>
-                )}
-            </List>
+                        {/* Add more List.Items for other properties as needed */}
+                    </List>
+                    <Button onClick={() => handleUpdate(selectedData)}>Update</Button>
+                    <Button color="red" onClick={handleDelete}>
+                        Delete
+                    </Button>
+                </>
+            )}
         </Dialog>
     );
 };

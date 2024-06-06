@@ -1,7 +1,8 @@
-import React from 'react';
+// app.tsx
+/* import React from 'react';
 import { AppProps } from 'next/app';
 import { MantineProvider } from '@mantine/core';
-import { QueryProvider } from './QueryProvider';
+import { QueryProvider } from './utils/QueryProvider';
 
 export default function App({ Component, pageProps }: AppProps) {
     return (
@@ -11,4 +12,4 @@ export default function App({ Component, pageProps }: AppProps) {
             </MantineProvider>
         </QueryProvider>
     );
-}
+} */

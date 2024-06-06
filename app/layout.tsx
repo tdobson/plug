@@ -3,8 +3,8 @@ import '@mantine/core/styles.css';
 import React from 'react';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 import { theme } from '../theme';
-import { QueryProvider } from './QueryProvider';
-import { NavbarSimpleColored } from '../components/NavbarSimpleColored/NavbarSimpleColored'
+import { QueryProvider } from './../utils/QueryProvider';
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -18,13 +18,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             />
         </head>
         <body>
-        <QueryProvider>
-            <MantineProvider theme={theme}>
+        <MantineProvider theme={theme}>
+            <QueryProvider>
+                 {children}
+             </QueryProvider>
+        </MantineProvider>
 
-                        {children}
-
-            </MantineProvider>
-        </QueryProvider>
         </body>
         </html>
     );

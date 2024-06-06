@@ -2,8 +2,121 @@
  * Plugin Name: User & Order Meta API
  * Description: Custom WordPress API for retrieving user and order meta fields
  * Version: 1.0
- * Author: Your Name
+ * Author: Tim Dobson
+ *
+ * This plugin provides a custom API endpoint for retrieving user and order meta fields in WordPress.
+ * It uses the REST API infrastructure and requires authentication for access.
+ *
+ * Endpoint:
+ * - POST /wp-api/v1/user-order-meta
+ *
+ * Request Body (JSON):
+ * {
+ *   "user_order_ids": [
+ *     {
+ *       "user_id": 1,
+ *       "order_id": 123
+ *     },
+ *     {
+ *       "user_id": 2,
+ *       "order_id": 456
+ *     }
+ *   ],
+ *   "user_meta_keys": ["first_name", "last_name"],
+ *   "order_meta_keys": ["_billing_address_1", "_billing_city"]
+ * }
+ *
+ * Response (JSON):
+ * {
+ *   "1": {
+ *     "user_id": 1,
+ *     "order_id": 123,
+ *     "user_meta": {
+ *       "first_name": "John",
+ *       "last_name": "Doe"
+ *     },
+ *     "order_meta": {
+ *       "_billing_address_1": "123 Main St",
+ *       "_billing_city": "Anytown"
+ *     }
+ *   },
+ *   "2": {
+ *     "user_id": 2,
+ *     "order_id": 456,
+ *     "user_meta": {
+ *       "first_name": "Jane",
+ *       "last_name": "Doe"
+ *     },
+ *     "order_meta": {
+ *       "_billing_address_1": "456 Elm St",
+ *       "_billing_city": "Othertown"
+ *     }
+ *   }
+ * }
+ *
+ * Example Response (JSON):
+ * {
+ *   "650": {
+ *     "user_id": 650,
+ *     "order_id": 1234,
+ *     "user_meta": {
+ *       "last_name": "Lomax",
+ *       "stats_attendance_attended_cached": "25",
+ *       "skills-belaying": "lead-belayer",
+ *       "first_name": "Bethany",
+ *       "scores_attendance_reliability_score_cached": "92",
+ *       "scores_volunteer_reliability_score_cached": "83",
+ *       "scores_volunteer_value_cached": "446",
+ *       "stats_attendance_indoor_wednesday_attended_cached": "20",
+ *       "admin-can-you-help": "help at sign-in",
+ *       "nickname": "Bethany Rachel",
+ *       "climbing-indoors-leading-grades": "5 to 5+",
+ *       "climbing-indoors-toproping-grades": "6a",
+ *       "climbing-indoors-skills-passing-on": "First experience of climbing,Top Rope Belaying,How to use the autobelay,How to use the indoor bouldering area",
+ *       "admin-first-timer-indoor": "No"
+ *     },
+ *     "order_meta": {
+ *       "cc_attendance": "duplicate",
+ *       "cc_volunteer": "duplicate",
+ *       "cc_volunteer_attendance": "duplicate"
+ *     }
+ *   },
+ *   "660": {
+ *     "user_id": 660,
+ *     "order_id": 34543,
+ *     "user_meta": {
+ *       "last_name": "Burgin",
+ *       "stats_attendance_attended_cached": "25",
+ *       "skills-belaying": "lead-belayer",
+ *       "first_name": "Jordan",
+ *       "scores_attendance_reliability_score_cached": "100",
+ *       "scores_volunteer_reliability_score_cached": "100",
+ *       "scores_volunteer_value_cached": "1100",
+ *       "stats_attendance_indoor_wednesday_attended_cached": "20",
+ *       "admin-can-you-help": "help around announcements and cake time",
+ *       "nickname": "jordan.burgin",
+ *       "climbing-indoors-leading-grades": "6a",
+ *       "climbing-indoors-toproping-grades": "6b-6c",
+ *       "climbing-indoors-skills-passing-on": "First experience of climbing,Top Rope Belaying,Lead Belaying,Seconding Leads,Lead Climbing,How to take lead falls,How to use the autobelay,How to use the indoor bouldering area,Showing people how to introduce someone to top rope belaying",
+ *       "admin-first-timer-indoor": "No"
+ *     },
+ *     "order_meta": {
+ *       "cc_attendance": "duplicate",
+ *       "cc_volunteer": "duplicate",
+ *       "cc_volunteer_attendance": "duplicate"
+ *     }
+ *   }
+ * }
+ *
+ * Authentication:
+ * The endpoint requires a custom authentication token. Include it in the Authorization header of the request:
+ * - Authorization: Bearer geeboh7Jeengie8uS1chaiqu
+ *
+ * Note:
+ * - The function get_user_order_meta() is the callback for the API endpoint.
+ * - The function authenticate_request_rest() is the callback for the API endpoint permission check.
  */
+
 
 // Define the API endpoint
 add_action('rest_api_init', function () {
