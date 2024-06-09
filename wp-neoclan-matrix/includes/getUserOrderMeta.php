@@ -1,3 +1,4 @@
+<?php
 /**
  * Plugin Name: User & Order Meta API
  * Description: Custom WordPress API for retrieving user and order meta fields
@@ -31,6 +32,7 @@
  *   "1": {
  *     "user_id": 1,
  *     "order_id": 123,
+ *     "order_status": "completed",
  *     "user_meta": {
  *       "first_name": "John",
  *       "last_name": "Doe"
@@ -43,6 +45,7 @@
  *   "2": {
  *     "user_id": 2,
  *     "order_id": 456,
+ *     "order_status": "processing",
  *     "user_meta": {
  *       "first_name": "Jane",
  *       "last_name": "Doe"
@@ -59,6 +62,7 @@
  *   "650": {
  *     "user_id": 650,
  *     "order_id": 1234,
+ *     "order_status": "on-hold",
  *     "user_meta": {
  *       "last_name": "Lomax",
  *       "stats_attendance_attended_cached": "25",
@@ -84,6 +88,7 @@
  *   "660": {
  *     "user_id": 660,
  *     "order_id": 34543,
+ *     "order_status": "completed",
  *     "user_meta": {
  *       "last_name": "Burgin",
  *       "stats_attendance_attended_cached": "25",
@@ -117,68 +122,54 @@
  * - The function authenticate_request_rest() is the callback for the API endpoint permission check.
  */
 
-
 // Define the API endpoint
 add_action('rest_api_init', function () {
-  register_rest_route('wp-api/v1', '/user-order-meta', array(
-    'methods' => 'POST',
-    'callback' => 'get_user_order_meta',
-    'permission_callback' => 'authenticate_request_rest', // Add permission callback to authenticate the request
-  ));
+    register_rest_route('wp-api/v1', '/user-order-meta', array(
+        'methods' => 'POST',
+        'callback' => 'get_user_order_meta',
+        'permission_callback' => 'authenticate_request_rest',
+    ));
 });
 
-// Define the API endpoint callback function
-function get_user_order_meta( $request ) {
-    $user_order_ids = $request->get_param( 'user_order_ids' );
-    $user_meta_keys = $request->get_param( 'user_meta_keys' );
-    $order_meta_keys = $request->get_param( 'order_meta_keys' );
+function get_user_order_meta($request) {
+    $user_order_ids = $request->get_param('user_order_ids');
+    $user_meta_keys = $request->get_param('user_meta_keys');
+    $order_meta_keys = $request->get_param('order_meta_keys');
     $user_order_meta = array();
 
     // Loop through the user order IDs and get the user meta and order meta fields
-    foreach ( $user_order_ids as $user_order ) {
+    foreach ($user_order_ids as $user_order) {
         $user_id = $user_order['user_id'];
         $order_id = $user_order['order_id'];
+
+        if (!user_has_access_to_event($order_id)) {
+            return new WP_Error('unauthorised_for_that_event', 'You do not have access to this event.', array('status' => 403));
+        }
 
         $user_meta = array();
         $order_meta = array();
 
         // Get the user meta fields
-        foreach ( $user_meta_keys as $meta_key ) {
-            $user_meta[ $meta_key ] = get_user_meta( $user_id, $meta_key, true );
+        foreach ($user_meta_keys as $meta_key) {
+            $user_meta[$meta_key] = get_user_meta($user_id, $meta_key, true);
         }
 
         // Get the order meta fields
-        $order = wc_get_order( $order_id );
-        foreach ( $order_meta_keys as $meta_key ) {
-            $order_meta[ $meta_key ] = $order->get_meta( $meta_key );
+        $order = wc_get_order($order_id);
+        foreach ($order_meta_keys as $meta_key) {
+            $order_meta[$meta_key] = $order->get_meta($meta_key);
         }
 
-        // Combine user meta and order meta fields
-        $user_order_meta[ $user_id ] = array(
+        // Combine user meta, order meta fields and order status
+        $user_order_meta[$user_id] = array(
             'user_id' => $user_id,
             'order_id' => $order_id,
+            'order_status' => $order->get_status(),
             'user_meta' => $user_meta,
             'order_meta' => $order_meta,
         );
     }
 
     // Return the user and order meta fields as a JSON response
-    return rest_ensure_response( $user_order_meta );
+    return rest_ensure_response($user_order_meta);
 }
-
-
-// Add permission callback function to authenticate the request
-function authenticate_request_rest($request)
-{
-  $headers = getallheaders();
-
-  // Check if the authorization header contains the correct key
-  $auth_key = 'geeboh7Jeengie8uS1chaiqu';
-  if (isset($headers['Authorization']) && $headers['Authorization'] === 'Bearer ' . $auth_key) {
-    return true;
-  }
-
-  // Return false if authentication fails
-  return false;
-}
-

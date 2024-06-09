@@ -22,26 +22,37 @@ The project follows a modular and scalable structure, with the following main di
 
 - **app/**: Contains the Next.js app structure.
     - **checkin/**: Contains the check-in page and related components.
-        - **CheckInTableWrapper.tsx**: A client component that wraps the CheckInTable and handles data fetching and mutations.
-        - **page.tsx**: The server component that renders the Check-ins page.
+        - **page.tsx**: The main check-in page component.
+    - **pairing/**: Contains the pairing page and related components.
+        - **page.tsx**: The main pairing page component.
+    - **outdoor-events/**: Contains the outdoor events page and related components.
+        - **page.tsx**: The main outdoor events page component.
+    - **overnight-events/**: Contains the overnight events page and related components.
+        - **page.tsx**: The main overnight events page component.
+    - **training-events/**: Contains the training events page and related components.
+        - **page.tsx**: The main training events page component.
+    - **social-events/**: Contains the social events page and related components.
+        - **page.tsx**: The main social events page component.
     - **layout.tsx**: Defines the root layout for the application.
     - **page.tsx**: The main page of the application.
-    - **QueryProvider.tsx**: Provides the React Query client to the application.
 - **components/**: Contains reusable UI components for the application.
-    - **ColorSchemeToggle/**: Allows toggling between light and dark color schemes.
-    - **CheckInDetails/**: Displays detailed information about a selected check-in.
-    - **CheckInTable/**: Renders the table for managing check-ins.
-    - **Welcome/**: Displays a welcome message on the main page.
-    - **Modal/**: Handles displaying a modal for user interactions.
-    - **Grid/**: Renders a grid layout for user data.
+    - **Modal/**: Contains the modal component for user interactions.
+        - **Modal.tsx**: Handles displaying a modal for user interactions.
+    - **Grid/**: Contains the grid layout component for displaying user data.
+        - **Grid.tsx**: Renders a grid layout for user data.
+    - **Common/**: Contains common reusable components.
 - **hooks/**: Contains custom React hooks.
     - **useCheckin.ts**: A custom hook for managing check-in data using React Query.
+    - **usePairing.ts**: A custom hook for managing pairing data using React Query.
+    - **useEvents.ts**: A custom hook for managing events data using React Query.
 - **services/**: Contains API service functions for interacting with the custom WordPress API.
-    - **checkinsService.ts**: Provides functions for fetching, creating, updating, and deleting check-ins.
+    - **apiService.ts**: Provides functions for fetching, creating, updating, and deleting data.
 - **types/**: Contains TypeScript type definitions for the application's data models.
     - **checkin.ts**: Defines the Checkin interface.
+    - **events.ts**: Defines the Events interface.
 - **utils/**: Contains utility functions and modules.
     - **api.ts**: Defines the API request function and API service functions for interacting with the custom WordPress API.
+    - **helpers.ts**: Contains helper functions.
 - **theme.ts**: Defines the Mantine theme configuration for the application.
 - **next.config.mjs**: Configuration file for Next.js.
 - **postcss.config.cjs**: Configuration file for PostCSS.
@@ -51,17 +62,17 @@ The project follows a modular and scalable structure, with the following main di
 
 ## Application Flow
 
-1. The user navigates to the Check-ins page (**app/checkin/page.tsx**).
-2. The **CheckInTableWrapper** component (**app/checkin/CheckInTableWrapper.tsx**) fetches the check-in data from the custom WordPress API using the `useQuery` hook from React Query.
-3. The **CheckInTable** component (**components/CheckInTable/CheckInTable.tsx**) renders the table with the fetched check-in data.
-4. The user can perform CRUD operations on the check-ins:
-    - **Create**: The user can click the "Create New Check-in" button to open a modal and fill in the details for a new check-in. The `createMutation` from **CheckInTableWrapper** sends a POST request to the custom WordPress API to create the new check-in.
-    - **Read**: The user can view the check-ins in the table and click on a row to see more details in the **CheckInDetails** component (**components/CheckInDetails/CheckInDetails.tsx**).
-    - **Update**: The user can click the edit icon on a row to open a modal and update the check-in details. The `updateMutation` from **CheckInTableWrapper** sends a PUT request to the custom WordPress API to update the check-in.
-    - **Delete**: The user can click the delete icon on a row to delete a check-in. The `deleteMutation` from **CheckInTableWrapper** sends a DELETE request to the custom WordPress API to delete the check-in.
-5. The **useCheckins** hook (**hooks/useCheckins.ts**) provides the necessary data fetching and mutation functions for managing check-in data using React Query.
-6. The **checkinsService** (**services/checkinsService.ts**) acts as an intermediary between the application and the custom WordPress API, providing functions for fetching, creating, updating, and deleting check-ins.
-7. The **api** utility module (**utils/api.ts**) handles the API requests and error handling, making use of the Mantine notifications system to display error messages.
+1. The user navigates to the desired page (e.g., Check-in, Pairing, Outdoor Events).
+2. The respective page component (e.g., **CheckInPage.tsx**, **PairingPage.tsx**) fetches the necessary data from the custom WordPress API using the appropriate custom hook (e.g., `useCheckin`, `usePairing`, `useEvents`).
+3. The **GridComponent** renders the data in a grid layout. Users can interact with the data, triggering modals or other interactions as needed.
+4. CRUD operations are handled via the modal component (**ModalComponent.tsx**):
+    - **Create**: Users can click a "Create" button to open a modal and fill in details for a new entry. The `createMutation` sends a POST request to the API.
+    - **Read**: Users can view details in the grid and click on rows to see more details in a modal.
+    - **Update**: Users can click an edit icon to update details. The `updateMutation` sends a PUT request to the API.
+    - **Delete**: Users can click a delete icon to remove an entry. The `deleteMutation` sends a DELETE request to the API.
+5. The custom hooks (e.g., **useCheckin.ts**) provide data fetching and mutation functions using React Query.
+6. The **apiService.ts** acts as an intermediary between the application and the custom WordPress API, providing functions for fetching, creating, updating, and deleting data.
+7. The **api.ts** utility module handles API requests and error handling, making use of the Mantine notifications system to display error messages.
 
 ## Running the Project
 
