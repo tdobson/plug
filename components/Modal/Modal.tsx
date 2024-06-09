@@ -1,10 +1,18 @@
-// components/Modal/Modal.tsx
 import React, { useState } from 'react';
 import { Modal, Button, Text, Divider } from '@mantine/core';
 import { useSendOrderMeta } from '../../utils/api';
+import { RowData } from '../../types/checkin';
 import './Modal.css';
 
-const ModalComponent = ({ isOpen, onClose, selectedData, onUpdate, onDelete }) => {
+interface ModalComponentProps {
+    isOpen: boolean;
+    onClose: () => void;
+    selectedData: RowData | null;
+    onUpdate: (updatedData: RowData) => void;
+    onDelete: (userId: string) => void;
+}
+
+const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, selectedData, onUpdate, onDelete }) => {
     const { mutate: sendOrderMeta } = useSendOrderMeta();
     const [nonAttendanceReason, setNonAttendanceReason] = useState('');
     const [showNonAttendanceModal, setShowNonAttendanceModal] = useState(false);
@@ -12,48 +20,58 @@ const ModalComponent = ({ isOpen, onClose, selectedData, onUpdate, onDelete }) =
     const [showVolunteerModal, setShowVolunteerModal] = useState(false);
 
     const handleUpdate = async () => {
-        const updatedOrderMeta = {
-            ...selectedData.order_meta,
-            cc_attendance: 'attended',
-            cc_checkin: true,
-        };
-        await sendOrderMeta({ ...selectedData, order_meta: updatedOrderMeta });
-        onUpdate({ ...selectedData, order_meta: updatedOrderMeta });
-    };
-
-    const handleDelete = async () => {
-        await sendOrderMeta({ ...selectedData, deleted: true });
-        onDelete(selectedData.user_id);
-    };
-
-    const handleNonAttendance = async (reason) => {
-        const updatedOrderMeta = {
-            ...selectedData.order_meta,
-            cc_attendance: reason,
-        };
-        await sendOrderMeta({ ...selectedData, order_meta: updatedOrderMeta });
-        setNonAttendanceReason(reason);
-        setShowNonAttendanceModal(false);
-
-        if (selectedData.order_meta.cc_volunteer !== 'none') {
-            setShowVolunteerModal(true);
-        } else {
-            setShowUndoButton(true);
-            setTimeout(() => setShowUndoButton(false), 2000);
+        if (selectedData) {
+            const updatedOrderMeta = {
+                ...selectedData.order_meta,
+                cc_attendance: 'attended',
+                cc_checkin: true,
+            };
+            await sendOrderMeta({ ...selectedData, order_meta: updatedOrderMeta });
             onUpdate({ ...selectedData, order_meta: updatedOrderMeta });
         }
     };
 
-    const handleVolunteerAttendance = async (attended) => {
-        let updatedOrderMeta = {
-            ...selectedData.order_meta,
-            cc_volunteer_attendance: attended ? 'attended' : nonAttendanceReason,
-        };
-        await sendOrderMeta({ ...selectedData, order_meta: updatedOrderMeta });
-        setShowVolunteerModal(false);
-        setShowUndoButton(true);
-        setTimeout(() => setShowUndoButton(false), 2000);
-        onUpdate({ ...selectedData, order_meta: updatedOrderMeta });
+    const handleDelete = async () => {
+        if (selectedData) {
+            await sendOrderMeta({ ...selectedData, deleted: true });
+            onDelete(selectedData.user_id);
+        }
+    };
+
+    const handleNonAttendance = async (reason: string) => {
+        if (selectedData) {
+            const updatedOrderMeta = {
+                ...selectedData.order_meta,
+                cc_attendance: reason,
+            };
+
+            try {
+                await sendOrderMeta({
+                    user_id: selectedData.user_id, // Add the user_id property
+                    order_id: selectedData.order_id,
+                    order_meta: updatedOrderMeta,
+                    order_status: 'processing',
+                    user_meta: selectedData.user_meta, // Add the user_meta property
+                });
+                onClose();
+            } catch (error) {
+                console.error('Error updating order meta:', error);
+            }
+        }
+    };
+
+    const handleVolunteerAttendance = async (attended: boolean) => {
+        if (selectedData) {
+            let updatedOrderMeta = {
+                ...selectedData.order_meta,
+                cc_volunteer_attendance: attended ? 'attended' : nonAttendanceReason,
+            };
+            await sendOrderMeta({ ...selectedData, order_meta: updatedOrderMeta });
+            setShowVolunteerModal(false);
+            setShowUndoButton(true);
+            setTimeout(() => setShowUndoButton(false), 2000);
+            onUpdate({ ...selectedData, order_meta: updatedOrderMeta });
+        }
     };
 
     return (

@@ -63,7 +63,7 @@ The project follows a modular and scalable structure, with the following main di
 ## Application Flow
 
 1. The user navigates to the desired page (e.g., Check-in, Pairing, Outdoor Events).
-2. The respective page component (e.g., **CheckInPage.tsx**, **PairingPage.tsx**) fetches the necessary data from the custom WordPress API using the appropriate custom hook (e.g., `useCheckin`, `usePairing`, `useEvents`).
+2. The respective page component (e.g., **CheckInPagex**, **PairingPage**) fetches the necessary data from the custom WordPress API using the appropriate custom hook (e.g., `useCheckin`, `usePairing`, `useEvents`).
 3. The **GridComponent** renders the data in a grid layout. Users can interact with the data, triggering modals or other interactions as needed.
 4. CRUD operations are handled via the modal component (**ModalComponent.tsx**):
     - **Create**: Users can click a "Create" button to open a modal and fill in details for a new entry. The `createMutation` sends a POST request to the API.

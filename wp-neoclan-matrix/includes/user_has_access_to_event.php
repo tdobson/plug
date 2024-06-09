@@ -2,8 +2,20 @@
 /**
  * Determines if the current user has access to a specific event.
  *
- * @param int $product_id - The ID of the product associated with the event.
- * @return boolean - True if the user has access to the event, false otherwise.
+ * This function first checks if the user is logged in. If not, it returns false.
+ * Then, it retrieves the current user's ID and checks if the user is part of the committee.
+ * If the user is part of the committee, the function returns true.
+ * If not, the function retrieves all the orders associated with the user's ID and checks the order meta data.
+ * If the 'cc_volunteer' meta data is not 'none' and the 'cc_attendance' meta data is 'pending',
+ * it iterates through the order's items. If the item's product ID matches the provided product ID, the function returns true.
+ * If no conditions are met, the function returns false.
+ *
+ * @param int $product_id The ID of the product associated with the event.
+ *
+ * @return boolean True if the user has access to the event, false otherwise.
+ *
+ * @throws null This function does not throw any exceptions.
+ *
  */
 function user_has_access_to_event($product_id) {
     if (!is_user_logged_in()) {

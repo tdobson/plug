@@ -40,9 +40,7 @@ add_action('rest_api_init', function () {
     register_rest_route('wc-api/v1', '/products/live-events', array(
         'methods' => 'GET',
         'callback' => 'get_live_events_for_neoclan',
-        'permission_callback' => function () {
-            return is_user_logged_in();
-        },
+        'permission_callback' => 'authenticate_request_rest',
     ));
 });
 

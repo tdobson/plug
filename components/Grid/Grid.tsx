@@ -2,9 +2,15 @@
 import React from 'react';
 import { Grid, Text, Badge } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { RowData } from '../../types/checkin';
 
-const GridComponent = ({ rowData, onRowClick }) => {
-    const handleRowClick = (rowData) => {
+interface GridComponentProps {
+    rowData: RowData[];
+    onRowClick: (rowData: RowData) => void;
+}
+
+const GridComponent: React.FC<GridComponentProps> = ({ rowData, onRowClick }) => {
+    const handleRowClick = (rowData: RowData) => {
         onRowClick(rowData);
     };
 
@@ -20,10 +26,10 @@ const GridComponent = ({ rowData, onRowClick }) => {
 
     return (
         <Grid>
-            {Object.entries(rowData).map(([userId, userData]) => (
-                <Grid.Col key={userId} span={getColSpan()} onClick={() => handleRowClick(userData)}>
+            {rowData.map((userData) => (
+                <Grid.Col key={userData.user_id} span={getColSpan()} onClick={() => handleRowClick(userData)}>
                     <div style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '4px', cursor: 'pointer' }}>
-                        <Text weight={500} size="lg" mb={8}>
+                        <Text fw={500} size="lg" mb={8}>
                             {userData.user_meta.first_name} {userData.user_meta.last_name}
                         </Text>
                         <Text size="sm" color="dimmed" mb={8}>

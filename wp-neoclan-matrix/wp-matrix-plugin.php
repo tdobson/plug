@@ -6,6 +6,8 @@ Version: 1.0
 Author: Tim Dobson
 */
 
+define('USE_WORDPRESS_AUTH', false); // Set to true to use WordPress nonce, false to use Bearer token
+
 // Hook to initialize the plugin
 add_action('init', 'neoclan_init');
 
@@ -67,6 +69,7 @@ register_deactivation_hook(__FILE__, 'neoclan_deactivate');
 function neoclan_deactivate() {
     flush_rewrite_rules();
 }
+
 
 // Load the additional functionality
 require_once plugin_dir_path(__FILE__) . 'includes/authenticate_request_rest.php';

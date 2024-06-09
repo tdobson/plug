@@ -1,16 +1,29 @@
 import { useQuery, useMutation } from 'react-query';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { RowData } from '../types/checkin';
 
 // Load environment variables in development
 if (process.env.NODE_ENV === 'development') {
     require('dotenv').config();
 }
 
-const wpApiSettings = window.wpApiSettings; // Make sure wpApiSettings is available globally
+interface WpApiSettings {
+    nonce: string;
+    [key: string]: any;
+}
+
+interface QueryOptions {
+    enabled: boolean;
+}
+
+// Helper function to get wpApiSettings from window object
+function getWpApiSettings(): WpApiSettings | null {
+    return (typeof window !== 'undefined' && (window as any).wpApiSettings) ? (window as any).wpApiSettings : null;
+}
 
 // Helper function to get headers based on environment
-function getHeaders() {
-    const headers: Record<string, string> = {
+function getHeaders(): { 'Content-Type': string; 'Authorization'?: string; 'X-WP-Nonce'?: string } {
+    const headers: { 'Content-Type': string; 'Authorization'?: string; 'X-WP-Nonce'?: string } = {
         'Content-Type': 'application/json',
     };
 
@@ -20,14 +33,23 @@ function getHeaders() {
             headers['Authorization'] = `Bearer ${apiKey}`;
         }
     } else {
-        headers['X-WP-Nonce'] = wpApiSettings.nonce;
+        const wpApiSettings = getWpApiSettings();
+        if (wpApiSettings) {
+            headers['X-WP-Nonce'] = wpApiSettings.nonce;
+        }
     }
 
     return headers;
 }
 
 // Custom hook for fetching user order IDs
-export function useFetchUserOrderIDs(productId) {
+export function useFetchUserOrderIDs(productId: string) {
+    const [wpSettings, setWpSettings] = useState<WpApiSettings | null>(null);
+
+    useEffect(() => {
+        setWpSettings(getWpApiSettings());
+    }, []);
+
     return useQuery(['userOrderIDs', productId], async () => {
         const headers = getHeaders();
 
@@ -47,11 +69,17 @@ export function useFetchUserOrderIDs(productId) {
         return await response.json();
     }, {
         staleTime: 60000, // Mark data as stale after 1 minute (60000 milliseconds)
+        enabled: !!wpSettings, // Only enable the query when wpSettings is available
     });
 }
 
-// Custom hook for fetching details for missing user order IDs
-export function useFetchDetailsForMissingUserOrderIDs(productId, userOrderIDs) {
+export function useFetchDetailsForMissingUserOrderIDs(productId: string, userOrderIDs: string[], options: QueryOptions) {
+    const [wpSettings, setWpSettings] = useState<WpApiSettings | null>(null);
+
+    useEffect(() => {
+        setWpSettings(getWpApiSettings());
+    }, []);
+
     return useQuery(['userOrderDetails', productId, userOrderIDs], async () => {
         const userOrderMeta = {
             product_id: productId,
@@ -108,19 +136,19 @@ export function useFetchDetailsForMissingUserOrderIDs(productId, userOrderIDs) {
         return await response.json();
     }, {
         staleTime: 120000, // Mark data as stale after 2 minutes (120000 milliseconds)
+        enabled: !!wpSettings && options.enabled, // Only enable the query when wpSettings is available and options.enabled is true
     });
 }
 
-// Custom hook for sending order meta data
 export function useSendOrderMeta() {
-    return useMutation(async (userOrderMeta) => {
+    return useMutation(async (rowData: RowData) => {
         const headers = getHeaders();
 
         const response = await fetch('https://www.climbingclan.com/wp-json/wp-api/v1/update-order-meta', {
             method: 'POST',
             headers: headers,
             credentials: 'same-origin', // Include cookies for WordPress auth
-            body: JSON.stringify(userOrderMeta),
+            body: JSON.stringify(rowData),
         });
 
         if (response.status === 401) {
@@ -155,7 +183,7 @@ export function useFetchLiveEvents() {
 }
 
 // Custom hook for fetching product customers
-export function useFetchProductCustomers(productId) {
+export function useFetchProductCustomers(productId: string) {
     return useQuery(['productCustomers', productId], async () => {
         const headers = getHeaders();
 

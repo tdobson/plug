@@ -5,17 +5,18 @@ import React, { useState } from 'react';
 import { useFetchUserOrderIDs, useFetchDetailsForMissingUserOrderIDs } from '../../utils/api';
 import GridComponent from '../../components/Grid/Grid';
 import ModalComponent from '../../components/Modal/Modal';
+import { RowData } from '../../types/checkin';
 
 const CheckInPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedRowData, setSelectedRowData] = useState(null);
+    const [selectedRowData, setSelectedRowData] = useState<RowData | null>(null);
 
-    const handleRowClick = (rowData) => {
+    const handleRowClick = (rowData: RowData) => {
         setSelectedRowData(rowData);
         setIsModalOpen(true);
     };
 
-    const productId = 20787; // Replace with the actual product ID
+    const productId = '20787'; // Replace with the actual product ID
     const { data: userOrderIDs, isLoading: isUserOrderIDsLoading, isError: isUserOrderIDsError } = useFetchUserOrderIDs(productId);
     const { data: userOrderDetails, isLoading: isUserOrderDetailsLoading, isError: isUserOrderDetailsError } = useFetchDetailsForMissingUserOrderIDs(productId, userOrderIDs || [], {
         enabled: !!userOrderIDs,
@@ -30,7 +31,7 @@ const CheckInPage = () => {
     }
 
     const sortedUserOrderDetails = userOrderDetails
-        ? Object.values(userOrderDetails).sort((a, b) => a.user_meta.first_name.localeCompare(b.user_meta.first_name))
+        ? Object.values(userOrderDetails as Record<string, RowData>).sort((a, b) => a.user_meta.first_name.localeCompare(b.user_meta.first_name))
         : [];
 
     return (
