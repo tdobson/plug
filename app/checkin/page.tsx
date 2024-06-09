@@ -1,13 +1,12 @@
 // app/checkin/page.tsx
 'use client';
 
-import { useFetchUserOrderIDs, useFetchDetailsForMissingUserOrderIDs } from '../../utils/api';
-import GridComponent from '../../components/Grid/Grid'; // Update the import path
 import React, { useState } from 'react';
+import { useFetchUserOrderIDs, useFetchDetailsForMissingUserOrderIDs } from '../../utils/api';
+import GridComponent from '../../components/Grid/Grid';
 import ModalComponent from '../../components/Modal/Modal';
 
-const CheckinPage = () => {
-
+const CheckInPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState(null);
 
@@ -18,13 +17,9 @@ const CheckinPage = () => {
 
     const productId = 20787; // Replace with the actual product ID
     const { data: userOrderIDs, isLoading: isUserOrderIDsLoading, isError: isUserOrderIDsError } = useFetchUserOrderIDs(productId);
-
     const { data: userOrderDetails, isLoading: isUserOrderDetailsLoading, isError: isUserOrderDetailsError } = useFetchDetailsForMissingUserOrderIDs(productId, userOrderIDs || [], {
         enabled: !!userOrderIDs,
     });
-
-    console.log('userOrderIDs:', userOrderIDs);
-    console.log('userOrderDetails:', userOrderDetails);
 
     if (isUserOrderIDsLoading || isUserOrderDetailsLoading) {
         return <div>Loading...</div>;
@@ -33,11 +28,9 @@ const CheckinPage = () => {
     if (isUserOrderIDsError || isUserOrderDetailsError) {
         return <div>Error occurred while fetching user data.</div>;
     }
-    // Sort userOrderDetails by first name
+
     const sortedUserOrderDetails = userOrderDetails
-        ? Object.values(userOrderDetails).sort((a, b) =>
-            a.user_meta.first_name.localeCompare(b.user_meta.first_name)
-        )
+        ? Object.values(userOrderDetails).sort((a, b) => a.user_meta.first_name.localeCompare(b.user_meta.first_name))
         : [];
 
     return (
@@ -52,8 +45,7 @@ const CheckinPage = () => {
                 onDelete={() => {}}
             />
         </div>
-
     );
 };
 
-export default CheckinPage;
+export default CheckInPage;

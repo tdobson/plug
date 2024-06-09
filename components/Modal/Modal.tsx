@@ -11,49 +11,6 @@ const ModalComponent = ({ isOpen, onClose, selectedData, onUpdate, onDelete }) =
     const [showUndoButton, setShowUndoButton] = useState(false);
     const [showVolunteerModal, setShowVolunteerModal] = useState(false);
 
-    const getSkillBackgroundColor = () => {
-        if (!selectedData || !selectedData.user_meta || !selectedData.user_meta['skills-belaying']) {
-            return ''; // Return empty string for default background color
-        }
-
-        const skillsBelaying = selectedData.user_meta['skills-belaying'];
-        if (skillsBelaying === 'lead-belayer') {
-            return 'palegreen';
-        } else if (skillsBelaying === 'Top-rope-belaying') {
-            return 'cyan';
-        } else if (skillsBelaying === 'learner-lead-belayer') {
-            return 'yellow';
-        } else if (skillsBelaying === 'No-Belaying') {
-            return 'red';
-        }
-
-        return ''; // Empty string for default background color
-    };
-
-    const getLastClimbedBackgroundColor = () => {
-        if (
-            !selectedData ||
-            !selectedData.user_meta ||
-            !selectedData.user_meta.cc_compliance_last_date_of_climbing
-        ) {
-            return ''; // Return empty string for default background color
-        }
-
-        const lastDateOfClimbing = new Date(selectedData.user_meta.cc_compliance_last_date_of_climbing);
-        const today = new Date();
-        const daysDifference = Math.floor((today - lastDateOfClimbing) / (1000 * 60 * 60 * 24));
-
-        if (daysDifference > 60) {
-            return 'lightblue'; // Return light blue for more than 60 days difference
-        }
-
-        return ''; // Empty string for default background color
-    };
-
-    const listItemStyle = {
-        backgroundColor: getSkillBackgroundColor() || getLastClimbedBackgroundColor(),
-    };
-
     const handleUpdate = async () => {
         const updatedOrderMeta = {
             ...selectedData.order_meta,
@@ -128,24 +85,11 @@ const ModalComponent = ({ isOpen, onClose, selectedData, onUpdate, onDelete }) =
                                 </>
                             )}
                             <Divider />
-                            <Text className="list-item" style={listItemStyle}>
-                                This is the color wristband to give: {selectedData.user_meta['skills-belaying']}
-                            </Text>
-                            <Divider />
-                            {getLastClimbedBackgroundColor() === 'lightblue' && (
-                                <>
-                                    <Text className="list-item" style={listItemStyle}>
-                                        Good to have you back - It's been some time since you last climbed with us
-                                    </Text>
-                                </>
-                            )}
-                            <Divider />
-                            {/* Add more text elements for other properties as needed */}
+                            <Button onClick={handleUpdate}>Mark Checked In</Button>
+                            <Button color="red" onClick={() => setShowNonAttendanceModal(true)}>
+                                Mark non-attendance
+                            </Button>
                         </div>
-                        <Button onClick={handleUpdate}>Mark Checked In</Button>
-                        <Button color="red" onClick={() => setShowNonAttendanceModal(true)}>
-                            Mark non-attendance
-                        </Button>
                     </>
                 )}
             </Modal>
