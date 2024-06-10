@@ -16,11 +16,14 @@ const CheckInPage = () => {
         setIsModalOpen(true);
     };
 
-    const productId = '20787'; // Replace with the actual product ID
+    const productId = '20256'; // Replace with the actual product ID
+    console.log('Product ID:', productId);
     const { data: userOrderIDs, isLoading: isUserOrderIDsLoading, isError: isUserOrderIDsError } = useFetchUserOrderIDs(productId);
     const { data: userOrderDetails, isLoading: isUserOrderDetailsLoading, isError: isUserOrderDetailsError } = useFetchDetailsForMissingUserOrderIDs(productId, userOrderIDs || [], {
         enabled: !!userOrderIDs,
     });
+    console.log('User Order IDs:', userOrderIDs);
+    console.log('User Order Details:', userOrderDetails);
 
     if (isUserOrderIDsLoading || isUserOrderDetailsLoading) {
         return <div>Loading...</div>;
@@ -29,6 +32,10 @@ const CheckInPage = () => {
     if (isUserOrderIDsError || isUserOrderDetailsError) {
         return <div>Error occurred while fetching user data.</div>;
     }
+    console.log('Is User Order IDs Loading:', isUserOrderIDsLoading);
+    console.log('Is User Order IDs Error:', isUserOrderIDsError);
+    console.log('Is User Order Details Loading:', isUserOrderDetailsLoading);
+    console.log('Is User Order Details Error:', isUserOrderDetailsError);
 
     const sortedUserOrderDetails = userOrderDetails
         ? Object.values(userOrderDetails as Record<string, RowData>).sort((a, b) => a.user_meta.first_name.localeCompare(b.user_meta.first_name))

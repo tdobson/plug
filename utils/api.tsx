@@ -16,7 +16,6 @@ function useNonce() {
         if (firstDivElement) {
             const nonceValue = firstDivElement.getAttribute('data-nonce');
             setNonce(nonceValue);
-            console.log(nonceValue)
         }
     }, []);
 
