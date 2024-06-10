@@ -46,9 +46,33 @@ function neoclan_display_page() {
     if (file_exists($html_file_path)) {
         // Read the contents of the HTML file
         $html_content = file_get_contents($html_file_path);
-        echo $html_content;
+
+        // Create a new DOMDocument object
+        $dom = new DOMDocument();
+
+        // Load the HTML content into the DOMDocument object
+        @$dom->loadHTML($html_content);
+
+        // Find the first div element
+        $first_div = $dom->getElementsByTagName('div')->item(0);
+
+        if ($first_div) {
+            // Create a new nonce
+            $nonce = wp_create_nonce('wp_rest');
+
+            // Set the nonce as a data attribute on the first div element
+            $first_div->setAttribute('data-nonce', $nonce);
+
+            // Output the modified HTML content
+            echo $dom->saveHTML();
+        } else {
+            // If no div element is found, output the original HTML content
+            echo $html_content;
+        }
     } else {
-        echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Neoclan App</title></head><body><div id="root"></div><p>React app HTML file not found.</p></body></html>';
+        // If the HTML file is not found, output a fallback HTML structure
+        $nonce = wp_create_nonce('wp_rest');
+        echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Neoclan App</title></head><body><div data-nonce="' . esc_attr($nonce) . '"></div><p>React app HTML file not found.</p></body></html>';
     }
 }
 

@@ -2,41 +2,35 @@ import { useQuery, useMutation } from 'react-query';
 import { useEffect, useState } from 'react';
 import { RowData } from '../types/checkin';
 
-// Load environment variables in development
-if (process.env.NODE_ENV === 'development') {
-    require('dotenv').config();
-}
-
-interface WpApiSettings {
-    nonce: string;
-    [key: string]: any;
-}
-
 interface QueryOptions {
     enabled: boolean;
 }
 
-// Helper function to get wpApiSettings from window object
-function getWpApiSettings(): WpApiSettings | null {
-    return (typeof window !== 'undefined' && (window as any).wpApiSettings) ? (window as any).wpApiSettings : null;
+// Custom hook for storing and retrieving the nonce
+// Custom hook for storing and retrieving the nonce
+function useNonce() {
+    const [nonce, setNonce] = useState<string | null>(null);
+
+    useEffect(() => {
+        const firstDivElement = document.querySelector('div');
+        if (firstDivElement) {
+            const nonceValue = firstDivElement.getAttribute('data-nonce');
+            setNonce(nonceValue);
+            console.log(nonceValue)
+        }
+    }, []);
+
+    return nonce;
 }
 
-// Helper function to get headers based on environment
-function getHeaders(): { 'Content-Type': string; 'Authorization'?: string; 'X-WP-Nonce'?: string } {
-    const headers: { 'Content-Type': string; 'Authorization'?: string; 'X-WP-Nonce'?: string } = {
+// Helper function to get headers
+function getHeaders(nonce: string | null): { 'Content-Type': string; 'X-WP-Nonce'?: string } {
+    const headers: { 'Content-Type': string; 'X-WP-Nonce'?: string } = {
         'Content-Type': 'application/json',
     };
 
-    if (process.env.NODE_ENV === 'development') {
-        const apiKey = process.env.REACT_APP_API_KEY;
-        if (apiKey) {
-            headers['Authorization'] = `Bearer ${apiKey}`;
-        }
-    } else {
-        const wpApiSettings = getWpApiSettings();
-        if (wpApiSettings) {
-            headers['X-WP-Nonce'] = wpApiSettings.nonce;
-        }
+    if (nonce) {
+        headers['X-WP-Nonce'] = nonce;
     }
 
     return headers;
@@ -44,14 +38,10 @@ function getHeaders(): { 'Content-Type': string; 'Authorization'?: string; 'X-WP
 
 // Custom hook for fetching user order IDs
 export function useFetchUserOrderIDs(productId: string) {
-    const [wpSettings, setWpSettings] = useState<WpApiSettings | null>(null);
-
-    useEffect(() => {
-        setWpSettings(getWpApiSettings());
-    }, []);
+    const nonce = useNonce();
 
     return useQuery(['userOrderIDs', productId], async () => {
-        const headers = getHeaders();
+        const headers = getHeaders(nonce);
 
         const response = await fetch(
             `https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/${productId}`,
@@ -69,16 +59,12 @@ export function useFetchUserOrderIDs(productId: string) {
         return await response.json();
     }, {
         staleTime: 60000, // Mark data as stale after 1 minute (60000 milliseconds)
-        enabled: !!wpSettings, // Only enable the query when wpSettings is available
+        enabled: !!nonce, // Only enable the query when nonce is available
     });
 }
 
 export function useFetchDetailsForMissingUserOrderIDs(productId: string, userOrderIDs: string[], options: QueryOptions) {
-    const [wpSettings, setWpSettings] = useState<WpApiSettings | null>(null);
-
-    useEffect(() => {
-        setWpSettings(getWpApiSettings());
-    }, []);
+    const nonce = useNonce();
 
     return useQuery(['userOrderDetails', productId, userOrderIDs], async () => {
         const userOrderMeta = {
@@ -119,7 +105,7 @@ export function useFetchDetailsForMissingUserOrderIDs(productId: string, userOrd
             order_meta_keys: ['cc_attendance', 'cc_volunteer', 'cc_volunteer_attendance'],
         };
 
-        const headers = getHeaders();
+        const headers = getHeaders(nonce);
 
         const response = await fetch('https://www.climbingclan.com/wp-json/wp-api/v1/user-order-meta', {
             method: 'POST',
@@ -136,13 +122,15 @@ export function useFetchDetailsForMissingUserOrderIDs(productId: string, userOrd
         return await response.json();
     }, {
         staleTime: 120000, // Mark data as stale after 2 minutes (120000 milliseconds)
-        enabled: !!wpSettings && options.enabled, // Only enable the query when wpSettings is available and options.enabled is true
+        enabled: !!nonce && options.enabled, // Only enable the query when nonce is available and options.enabled is true
     });
 }
 
 export function useSendOrderMeta() {
+    const nonce = useNonce();
+
     return useMutation(async (rowData: RowData) => {
-        const headers = getHeaders();
+        const headers = getHeaders(nonce);
 
         const response = await fetch('https://www.climbingclan.com/wp-json/wp-api/v1/update-order-meta', {
             method: 'POST',
@@ -162,8 +150,10 @@ export function useSendOrderMeta() {
 
 // Custom hook for fetching live events
 export function useFetchLiveEvents() {
+    const nonce = useNonce();
+
     return useQuery('liveEvents', async () => {
-        const headers = getHeaders();
+        const headers = getHeaders(nonce);
 
         const response = await fetch('https://www.climbingclan.com/wp-json/wc-api/v1/products/live-events', {
             method: 'GET',
@@ -179,13 +169,16 @@ export function useFetchLiveEvents() {
         return await response.json();
     }, {
         staleTime: 60000, // Mark data as stale after 1 minute (60000 milliseconds)
+        enabled: !!nonce, // Only enable the query when nonce is available
     });
 }
 
 // Custom hook for fetching product customers
 export function useFetchProductCustomers(productId: string) {
+    const nonce = useNonce();
+
     return useQuery(['productCustomers', productId], async () => {
-        const headers = getHeaders();
+        const headers = getHeaders(nonce);
 
         const response = await fetch(`https://www.climbingclan.com/wp-json/wc-api/v1/products/purchased/${productId}`, {
             method: 'GET',
@@ -201,5 +194,6 @@ export function useFetchProductCustomers(productId: string) {
         return await response.json();
     }, {
         staleTime: 60000, // Mark data as stale after 1 minute (60000 milliseconds)
+        enabled: !!nonce, // Only enable the query when nonce is available
     });
 }
