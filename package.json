@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "NODE_ENV=development next dev",
     "build": "next build",
-    "deploy": "next build && rsync -avz -e ssh wp-neoclan-matrix climbingclan:/home/bitnami/stack/wordpress/wp-content/plugins/",
-    "php-deploy": "rsync -avz -e ssh wp-neoclan-matrix climbingclan:/home/bitnami/stack/wordpress/wp-content/plugins/",
+    "deploy": "next build && rsync -avz -e ssh wp-neoclan-matrix climbingclan:/home/bitnami/stack/wordpress/wp-content/plugins/ && ssh climbingclan sudo wp plugin deactivate wp-neoclan-matrix && ssh climbingclan sudo wp plugin activate wp-neoclan-matrix",
+    "php-deploy": "rsync -avz -e ssh wp-neoclan-matrix climbingclan:/home/bitnami/stack/wordpress/wp-content/plugins/ && ssh climbingclan sudo wp plugin deactivate wp-neoclan-matrix && ssh climbingclan sudo wp plugin activate wp-neoclan-matrix",
     "export": "next build && next export",
     "analyze": "ANALYZE=true next build",
     "start": "next start",
