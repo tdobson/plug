@@ -6,7 +6,6 @@ Version: 1.0
 Author: Tim Dobson
 */
 
-define('USE_WORDPRESS_AUTH', false); // Set to true to use WordPress nonce, false to use Bearer token
 
 // Hook to initialize the plugin
 add_action('init', 'neoclan_init');

@@ -57,62 +57,6 @@
  *   }
  * }
  *
- * Example Response (JSON):
- * {
- *   "650": {
- *     "user_id": 650,
- *     "order_id": 1234,
- *     "order_status": "on-hold",
- *     "user_meta": {
- *       "last_name": "Lomax",
- *       "stats_attendance_attended_cached": "25",
- *       "skills-belaying": "lead-belayer",
- *       "first_name": "Bethany",
- *       "scores_attendance_reliability_score_cached": "92",
- *       "scores_volunteer_reliability_score_cached": "83",
- *       "scores_volunteer_value_cached": "446",
- *       "stats_attendance_indoor_wednesday_attended_cached": "20",
- *       "admin-can-you-help": "help at sign-in",
- *       "nickname": "Bethany Rachel",
- *       "climbing-indoors-leading-grades": "5 to 5+",
- *       "climbing-indoors-toproping-grades": "6a",
- *       "climbing-indoors-skills-passing-on": "First experience of climbing,Top Rope Belaying,How to use the autobelay,How to use the indoor bouldering area",
- *       "admin-first-timer-indoor": "No"
- *     },
- *     "order_meta": {
- *       "cc_attendance": "duplicate",
- *       "cc_volunteer": "duplicate",
- *       "cc_volunteer_attendance": "duplicate"
- *     }
- *   },
- *   "660": {
- *     "user_id": 660,
- *     "order_id": 34543,
- *     "order_status": "completed",
- *     "user_meta": {
- *       "last_name": "Burgin",
- *       "stats_attendance_attended_cached": "25",
- *       "skills-belaying": "lead-belayer",
- *       "first_name": "Jordan",
- *       "scores_attendance_reliability_score_cached": "100",
- *       "scores_volunteer_reliability_score_cached": "100",
- *       "scores_volunteer_value_cached": "1100",
- *       "stats_attendance_indoor_wednesday_attended_cached": "20",
- *       "admin-can-you-help": "help around announcements and cake time",
- *       "nickname": "jordan.burgin",
- *       "climbing-indoors-leading-grades": "6a",
- *       "climbing-indoors-toproping-grades": "6b-6c",
- *       "climbing-indoors-skills-passing-on": "First experience of climbing,Top Rope Belaying,Lead Belaying,Seconding Leads,Lead Climbing,How to take lead falls,How to use the autobelay,How to use the indoor bouldering area,Showing people how to introduce someone to top rope belaying",
- *       "admin-first-timer-indoor": "No"
- *     },
- *     "order_meta": {
- *       "cc_attendance": "duplicate",
- *       "cc_volunteer": "duplicate",
- *       "cc_volunteer_attendance": "duplicate"
- *     }
- *   }
- * }
- *
  * Authentication:
  * The endpoint requires a custom authentication token. Include it in the Authorization header of the request:
  * - Authorization: Bearer geeboh7Jeengie8uS1chaiqu
@@ -136,6 +80,18 @@ function get_user_order_meta($request) {
     $user_meta_keys = $request->get_param('user_meta_keys');
     $order_meta_keys = $request->get_param('order_meta_keys');
     $user_order_meta = array();
+
+    // Validate the structure of the request
+    if (!is_array($user_order_ids) || !is_array($user_meta_keys) || !is_array($order_meta_keys)) {
+        return new WP_Error('invalid_request_structure', 'The request structure is invalid. Ensure user_order_ids, user_meta_keys, and order_meta_keys are arrays.', array('status' => 400));
+    }
+
+    // Ensure user_order_ids is an array of arrays with user_id and order_id
+    foreach ($user_order_ids as $user_order) {
+        if (!is_array($user_order) || !isset($user_order['user_id']) || !isset($user_order['order_id'])) {
+            return new WP_Error('invalid_user_order_structure', 'Each user_order_ids item should be an array with user_id and order_id.', array('status' => 400));
+        }
+    }
 
     // Loop through the user order IDs and get the user meta and order meta fields
     foreach ($user_order_ids as $user_order) {
@@ -173,3 +129,4 @@ function get_user_order_meta($request) {
     // Return the user and order meta fields as a JSON response
     return rest_ensure_response($user_order_meta);
 }
+?>

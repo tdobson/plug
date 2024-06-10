@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Authenticates a REST request.
  *
@@ -18,25 +19,50 @@
  * @throws null This function does not throw any exceptions.
  *
  */
- function authenticate_request_rest($request)
+function authenticate_request_rest($request)
 {
+
+    $auth_key = 'geeboh7Jeengie8uS1chaiqu';
+
     $headers = getallheaders();
     global $USE_WORDPRESS_AUTH;
 
+    // Log all headers for debugging
+    // error_log("Headers: " . print_r($headers, true));
+
     if ($USE_WORDPRESS_AUTH) {
         // WordPress Nonce Authentication
+        // error_log("Using WordPress Nonce Authentication");
         if (isset($headers['X-WP-Nonce'])) {
             $nonce = $headers['X-WP-Nonce'];
-            return wp_verify_nonce($nonce, 'wp_rest');
+            // error_log("X-WP-Nonce header is set: " . $nonce);
+            if (wp_verify_nonce($nonce, 'wp_rest')) {
+                // error_log("WordPress Nonce Authentication succeeded");
+                return true;
+            } else {
+                // error_log("WordPress Nonce Authentication failed");
+            }
+        } else {
+            // error_log("X-WP-Nonce header not set");
         }
     } else {
         // Bearer Authentication
-        $auth_key = 'geeboh7Jeengie8uS1chaiqu';
-        if (isset($headers['Authorization']) && $headers['Authorization'] === 'Bearer ' . $auth_key) {
-            return true;
+        // error_log("Using Bearer Authentication");
+
+        if (isset($headers['Authorization'])) {
+            // error_log("Authorization header is set: " . $headers['Authorization']);
+            if ($headers['Authorization'] === 'Bearer ' . $auth_key) {
+                // error_log("Bearer Authentication succeeded");
+                return true;
+            } else {
+                // error_log("Bearer Authentication failed: Invalid auth key");
+            }
+        } else {
+            // error_log("Authorization header not set");
         }
     }
 
     // Return false if authentication fails
+    // error_log("Authentication failed");
     return false;
 }
