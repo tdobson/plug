@@ -2,11 +2,16 @@ import { useQuery, useMutation } from 'react-query';
 import { useEffect, useState } from 'react';
 import { RowData } from '../types/checkin';
 
+// Variable to toggle between Bearer authentication and WordPress Auth
+const USE_BEARER_AUTH = true; // Set to false to use WordPress Auth
+
+// Bearer token value (only needed if USE_BEARER_AUTH is true)
+const BEARER_TOKEN = 'geeboh7Jeengie8uS1chaiqu';
+
 interface QueryOptions {
     enabled: boolean;
 }
 
-// Custom hook for storing and retrieving the nonce
 // Custom hook for storing and retrieving the nonce
 function useNonce() {
     const [nonce, setNonce] = useState<string | null>(null);
@@ -23,15 +28,18 @@ function useNonce() {
 }
 
 // Helper function to get headers
-function getHeaders(nonce: string | null): { 'Content-Type': string; 'X-WP-Nonce'?: string } {
-    const headers: { 'Content-Type': string; 'X-WP-Nonce'?: string } = {
+function getHeaders(nonce: string | null): { 'Content-Type': string; 'X-WP-Nonce'?: string; 'Authorization'?: string } {
+    const headers: { 'Content-Type': string; 'X-WP-Nonce'?: string; 'Authorization'?: string } = {
         'Content-Type': 'application/json',
     };
 
-    if (nonce) {
+    if (USE_BEARER_AUTH && BEARER_TOKEN) {
+        headers['Authorization'] = `Bearer ${BEARER_TOKEN}`;
+
+    } else if (nonce) {
         headers['X-WP-Nonce'] = nonce;
     }
-
+    console.log('Headers:', headers); // Log headers to ensure nonce or token is included
     return headers;
 }
 
@@ -58,7 +66,7 @@ export function useFetchUserOrderIDs(productId: string) {
         return await response.json();
     }, {
         staleTime: 60000, // Mark data as stale after 1 minute (60000 milliseconds)
-        enabled: !!nonce, // Only enable the query when nonce is available
+        enabled: !!nonce || USE_BEARER_AUTH, // Only enable the query when nonce is available or using Bearer Auth
     });
 }
 
@@ -121,7 +129,7 @@ export function useFetchDetailsForMissingUserOrderIDs(productId: string, userOrd
         return await response.json();
     }, {
         staleTime: 120000, // Mark data as stale after 2 minutes (120000 milliseconds)
-        enabled: !!nonce && options.enabled, // Only enable the query when nonce is available and options.enabled is true
+        enabled: (!!nonce || USE_BEARER_AUTH) && options.enabled, // Only enable the query when nonce is available or using Bearer Auth and options.enabled is true
     });
 }
 
@@ -168,7 +176,7 @@ export function useFetchLiveEvents() {
         return await response.json();
     }, {
         staleTime: 60000, // Mark data as stale after 1 minute (60000 milliseconds)
-        enabled: !!nonce, // Only enable the query when nonce is available
+        enabled: !!nonce || USE_BEARER_AUTH, // Only enable the query when nonce is available or using Bearer Auth
     });
 }
 
@@ -193,6 +201,6 @@ export function useFetchProductCustomers(productId: string) {
         return await response.json();
     }, {
         staleTime: 60000, // Mark data as stale after 1 minute (60000 milliseconds)
-        enabled: !!nonce, // Only enable the query when nonce is available
+        enabled: !!nonce || USE_BEARER_AUTH, // Only enable the query when nonce is available or using Bearer Auth
     });
 }
