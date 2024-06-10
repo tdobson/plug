@@ -13,6 +13,8 @@ add_action('init', 'neoclan_init');
 
 function neoclan_init() {
     add_rewrite_rule('^neoclan/?$', 'index.php?neoclan=1', 'top');
+//    add_rewrite_rule('^_next/(.*)$', 'wp-content/plugins/wp-neoclan-matrix/assets/_next/$1', 'top');
+        add_rewrite_rule('^_next/static/(.+)$', 'wp-content/plugins/wp-neoclan-matrix/assets/_next/static/$matches[1]', 'top');
 }
 
 add_filter('query_vars', 'neoclan_query_vars');
@@ -38,21 +40,16 @@ function neoclan_template_redirect() {
 }
 
 function neoclan_display_page() {
-    // Enqueue React app assets
-    $plugin_dir_url = plugin_dir_url(__FILE__);
-    echo '<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Neoclan App</title>
-        <link rel="stylesheet" href="' . $plugin_dir_url . 'assets/css/main.css">
-    </head>
-    <body>
-        <div id="root"></div>
-        <script src="' . $plugin_dir_url . 'assets/js/bundle.js"></script>
-    </body>
-    </html>';
+    // Define the path to the React app's HTML file
+    $html_file_path = plugin_dir_path(__FILE__) . 'assets/checkin.html';
+
+    if (file_exists($html_file_path)) {
+        // Read the contents of the HTML file
+        $html_content = file_get_contents($html_file_path);
+        echo $html_content;
+    } else {
+        echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Neoclan App</title></head><body><div id="root"></div><p>React app HTML file not found.</p></body></html>';
+    }
 }
 
 // Hook for plugin activation
@@ -70,7 +67,6 @@ function neoclan_deactivate() {
     flush_rewrite_rules();
 }
 
-
 // Load the additional functionality
 require_once plugin_dir_path(__FILE__) . 'includes/authenticate_request_rest.php';
 require_once plugin_dir_path(__FILE__) . 'includes/getLiveEventsForneoClan.php';
@@ -78,3 +74,4 @@ require_once plugin_dir_path(__FILE__) . 'includes/getUserOrderMeta.php';
 require_once plugin_dir_path(__FILE__) . 'includes/updateOrderMeta.php';
 require_once plugin_dir_path(__FILE__) . 'includes/getProductCustomers.php';
 require_once plugin_dir_path(__FILE__) . 'includes/user_has_access_to_event.php';
+?>
