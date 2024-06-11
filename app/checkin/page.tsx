@@ -37,9 +37,27 @@ const CheckInPage = () => {
     console.log('Is User Order Details Loading:', isUserOrderDetailsLoading);
     console.log('Is User Order Details Error:', isUserOrderDetailsError);
 
-    const sortedUserOrderDetails = userOrderDetails
-        ? Object.values(userOrderDetails as Record<string, RowData>).sort((a, b) => a.user_meta.first_name.localeCompare(b.user_meta.first_name))
+    // Filter userOrderDetails based on cc_attendance
+    const filteredUserOrderDetails = userOrderDetails
+        ? Object.values(userOrderDetails as Record<string, RowData>).filter(user => user.order_meta.cc_attendance === 'pending')
         : [];
+
+    const sortedUserOrderDetails = filteredUserOrderDetails.sort((a, b) =>
+        a.user_meta.first_name.localeCompare(b.user_meta.first_name)
+    );
+
+    const handleUpdate = (updatedData: RowData) => {
+        setSelectedRowData(null);
+        setIsModalOpen(false);
+        // Re-fetch or update state logic to reflect the change in attendance status
+    };
+
+    const handleDelete = (userId: string) => {
+        // Logic to handle deletion
+        setSelectedRowData(null);
+        setIsModalOpen(false);
+        // Re-fetch or update state logic to reflect the deletion
+    };
 
     return (
         <div>
@@ -49,8 +67,8 @@ const CheckInPage = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 selectedData={selectedRowData}
-                onUpdate={() => {}}
-                onDelete={() => {}}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
             />
         </div>
     );

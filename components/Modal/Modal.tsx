@@ -47,12 +47,13 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
 
             try {
                 await sendOrderMeta({
-                    user_id: selectedData.user_id, // Add the user_id property
+                    user_id: selectedData.user_id,
                     order_id: selectedData.order_id,
                     order_meta: updatedOrderMeta,
                     order_status: 'processing',
-                    user_meta: selectedData.user_meta, // Add the user_meta property
+                    user_meta: selectedData.user_meta,
                 });
+                onUpdate({ ...selectedData, order_meta: updatedOrderMeta });
                 onClose();
             } catch (error) {
                 console.error('Error updating order meta:', error);
@@ -74,6 +75,50 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
         }
     };
 
+    const getSkillBackgroundColor = () => {
+        if (!selectedData || !selectedData.user_meta || !selectedData.user_meta['skills-belaying']) {
+            return ''; // Return empty string for default background color
+        }
+
+        const skillsBelaying = selectedData.user_meta['skills-belaying'];
+        if (skillsBelaying === 'lead-belayer') {
+            return 'palegreen';
+        } else if (skillsBelaying === 'Top-rope-belaying') {
+            return 'cyan';
+        } else if (skillsBelaying === 'learner-lead-belayer') {
+            return 'yellow';
+        } else if (skillsBelaying === 'No-Belaying') {
+            return 'red';
+        }
+
+        return ''; // Empty string for default background color
+    };
+
+    const getLastClimbedBackgroundColor = () => {
+        if (
+            !selectedData ||
+            !selectedData.user_meta ||
+            !selectedData.user_meta.cc_compliance_last_date_of_climbing
+        ) {
+            return ''; // Return empty string for default background color
+        }
+
+        const lastClimbedDate = new Date(selectedData.user_meta.cc_compliance_last_date_of_climbing);
+        const currentDate = new Date();
+        const timeDifference = currentDate.getTime() - lastClimbedDate.getTime();
+        const daysDifference = timeDifference / (1000 * 3600 * 24);
+
+        if (daysDifference <= 7) {
+            return 'lightgreen';
+        } else if (daysDifference <= 30) {
+            return 'lightyellow';
+        } else if (daysDifference <= 60) {
+            return 'lightcoral';
+        } else {
+            return 'lightgrey';
+        }
+    };
+
     return (
         <>
             <Modal opened={isOpen} onClose={onClose} title="Let's get checked in">
@@ -83,27 +128,52 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                             {selectedData.user_meta.first_name} {selectedData.user_meta.last_name} (aka{' '}
                             {selectedData.user_meta.nickname})
                         </Text>
+                        <div style={{ backgroundColor: getSkillBackgroundColor(), padding: '10px', borderRadius: '5px' }}>
+                            <Text>Belaying Skills: {selectedData.user_meta['skills-belaying']}</Text>
+                        </div>
+                        <div style={{ backgroundColor: getLastClimbedBackgroundColor(), padding: '10px', borderRadius: '5px', marginTop: '10px' }}>
+                            <Text>Last Climbed: {selectedData.user_meta.cc_compliance_last_date_of_climbing}</Text>
+                        </div>
                         <div>
                             {selectedData.order_meta.cc_volunteer !== 'none' && (
                                 <>
                                     <Divider />
                                     <Text>
-                                        You know what you're doing to help with {selectedData.order_meta.cc_volunteer}{' '}
+                                        Do you know what you're doing to help with {selectedData.order_meta.cc_volunteer}{' '}
                                         this time?
                                     </Text>
                                 </>
                             )}
-                            {selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached === '0' && (
+                            {selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached === 0 && (
                                 <>
                                     <Divider />
                                     <Text>
                                         First time attendee - {selectedData.user_meta.first_name} is here for the first
-                                        time
+                                        time. Make them feel welcome!
+                                    </Text>
+                                </>
+                            )}
+                            {selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached === 1 && (
+                                <>
+                                    <Divider />
+                                    <Text>
+                                        Second time attendee - {selectedData.user_meta.first_name} is here for the second
+                                        time - help us get to know them. Ask them a question?
+                                    </Text>
+                                </>
+                            )}
+                            {selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached === 2 && (
+                                <>
+                                    <Divider />
+                                    <Text>
+                                        Third time attendee - {selectedData.user_meta.first_name} is here for the third
+                                        time - welcome them back?
                                     </Text>
                                 </>
                             )}
                             <Divider />
                             <Button onClick={handleUpdate}>Mark Checked In</Button>
+                            <Divider />
                             <Button color="red" onClick={() => setShowNonAttendanceModal(true)}>
                                 Mark non-attendance
                             </Button>
@@ -123,14 +193,14 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                         onClick={() => handleNonAttendance('cancelled')}
                         className="wrap-button"
                     >
-                        Did they let you know they weren't coming in advance?
+                        Did they let you know they<br /> weren't coming in advance?
                     </Button>
                     <Button
                         fullWidth
                         onClick={() => handleNonAttendance('late-bail')}
                         className="wrap-button"
                     >
-                        Did they let you know they weren't coming after 6pm?
+                        Did they let you know they<br/> weren't coming after 6pm?
                     </Button>
                     <Button
                         fullWidth
@@ -144,7 +214,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                         onClick={() => handleNonAttendance('duplicate')}
                         className="wrap-button"
                     >
-                        Is this a duplicate order?
+                        Is this a duplicate signup?
                     </Button>
                 </div>
             </Modal>

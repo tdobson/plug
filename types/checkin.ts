@@ -2,12 +2,12 @@ export interface UserMeta {
     first_name: string;
     last_name: string;
     nickname: string;
-    stats_attendance_attended_cached: string;
-    skills_belaying: string;
-    scores_attendance_reliability_score_cached: string;
-    scores_volunteer_reliability_score_cached: string;
-    scores_volunteer_value_cached: string;
-    stats_attendance_indoor_wednesday_attended_cached: string;
+    stats_attendance_attended_cached: number;
+    'skills-belaying': string;
+    scores_attendance_reliability_score_cached: number;
+    scores_volunteer_reliability_score_cached: number;
+    scores_volunteer_value_cached: number;
+    stats_attendance_indoor_wednesday_attended_cached: number;
     admin_can_you_help: string;
     climbing_indoors_leading_grades: string;
     climbing_indoors_toproping_grades: string;
@@ -16,7 +16,7 @@ export interface UserMeta {
     admin_wednesday_requests_notes: string;
     milestones_3_badge: string;
     milestones_5_band: string;
-    stats_volunteer_for_numerator_cached: string;
+    stats_volunteer_for_numerator_cached: number;
     committee_current: string;
     cc_member: string;
     competency_indoor_trip_director: string;
@@ -29,6 +29,7 @@ export interface UserMeta {
     admin_code_of_conduct_accepted: string;
     admin_participation_statement_one: string;
     admin_participation_statement_two: string;
+
 }
 
 export interface OrderMeta {

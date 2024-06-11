@@ -24,6 +24,18 @@ const GridComponent: React.FC<GridComponentProps> = ({ rowData, onRowClick }) =>
         return 4; // Three columns on desktop
     };
 
+    const getAttendanceReliabilityColor = (score: number) => {
+        if (score > 95) return 'green';
+        if (score > 90) return 'orange';
+        return 'red';
+    };
+
+    const getAttendanceTimesColor = (times: number) => {
+        if (times > 10) return 'green';
+        if (times > 5) return 'orange';
+        return 'red';
+    };
+
     return (
         <Grid>
             {rowData.map((userData) => (
@@ -36,16 +48,20 @@ const GridComponent: React.FC<GridComponentProps> = ({ rowData, onRowClick }) =>
                             Facebook Name: {userData.user_meta.nickname}
                         </Text>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-                            <Badge color="blue" variant="light">
+                            <Badge color={getAttendanceTimesColor(userData.user_meta.stats_attendance_attended_cached)} variant="light">
                                 Attended: {userData.user_meta.stats_attendance_attended_cached} times
                             </Badge>
 
-                            <Badge color="orange" variant="light">
-                                Attendance Reliability: {userData.user_meta.scores_attendance_reliability_score_cached}%
-                            </Badge>
-                            <Badge color="grape" variant="light">
-                                Volunteering tonight as: {userData.order_meta.cc_volunteer}
-                            </Badge>
+                            {userData.user_meta.scores_attendance_reliability_score_cached && (
+                                <Badge color={getAttendanceReliabilityColor(Number(userData.user_meta.scores_attendance_reliability_score_cached))} variant="light">
+                                    Attendance Reliability: {userData.user_meta.scores_attendance_reliability_score_cached}%
+                                </Badge>
+                            )}
+                            {userData.order_meta.cc_volunteer !== 'none' && (
+                                <Badge color="grape" variant="light">
+                                    Volunteering this time as: {userData.order_meta.cc_volunteer}
+                                </Badge>
+                            )}
                         </div>
                     </div>
                 </Grid.Col>
