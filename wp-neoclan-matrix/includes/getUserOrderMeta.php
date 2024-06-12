@@ -76,7 +76,10 @@ $allowed_meta_keys = array(
         'scores_attendance_reliability_score_cached',
         'scores_volunteer_reliability_score_cached',
         'scores_volunteer_value_cached',
+        'scores_volunteer_score_cached',
         'stats_attendance_indoor_wednesday_attended_cached',
+        'admin_new_indoor_clan_join_admin_team',
+        'admin_parthian_clan_join_admin_team',
         'admin-can-you-help',
         'nickname',
         'climbing-indoors-leading-grades',
@@ -84,6 +87,7 @@ $allowed_meta_keys = array(
         'climbing-indoors-skills-passing-on',
         'admin-first-timer-indoor',
         'admin-wednesday-requests-notes',
+        'admin-over18',
         'milestones_3_badge',
         'milestones_5_band',
         'stats_volunteer_for_numerator_cached',
@@ -103,7 +107,14 @@ $allowed_meta_keys = array(
     'order_meta_keys' => array(
         'cc_attendance',
         'cc_volunteer',
-        'cc_volunteer_attendance'
+        'cc_volunteer_attendance',
+        'cc_attendance_sim',
+        'cc_volunteer_attendance_sim',
+        'cc_volunteer_sim',
+        'cc_outdoor_location_sim',
+        'cc_location',
+        'cc_outdoor_location',
+        'memberbot_order_category'
     )
 );
 
