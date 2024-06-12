@@ -5,7 +5,9 @@ import React, { useState } from 'react';
 import { useFetchUserOrderIDs, useFetchDetailsForMissingUserOrderIDs } from '../../utils/api';
 import GridComponent from '../../components/Grid/Grid';
 import ModalComponent from '../../components/Modal/Modal';
+import CheckInStatusMessage from '../../components/CheckInStatusMessage/CheckInStatusMessage';
 import { RowData } from '../../types/checkin';
+import {Space} from "@mantine/core";
 
 const CheckInPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,10 +52,6 @@ const CheckInPage = () => {
     if (isUserOrderIDsError || isUserOrderDetailsError) {
         return <div>Error occurred while fetching user data.</div>;
     }
-    console.log('Is User Order IDs Loading:', isUserOrderIDsLoading);
-    console.log('Is User Order IDs Error:', isUserOrderIDsError);
-    console.log('Is User Order Details Loading:', isUserOrderDetailsLoading);
-    console.log('Is User Order Details Error:', isUserOrderDetailsError);
 
     const isValidUserOrderDetails = (details: any): details is Record<string, RowData> => {
         if (typeof details !== 'object' || details === null) return false;
@@ -101,6 +99,8 @@ const CheckInPage = () => {
     return (
         <div>
             <h1>Check-in</h1>
+            <CheckInStatusMessage userOrderDetails={userOrderDetails} />
+            <Space />
             <GridComponent rowData={sortedUserOrderDetails} onRowClick={handleRowClick} />
             <ModalComponent
                 isOpen={isModalOpen}

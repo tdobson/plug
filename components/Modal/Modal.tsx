@@ -188,7 +188,6 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                                 They're not coming
                             </Button>
                         </Group>
-                        <Space h="lg" />
 
                         {attendance !== null && (
                             <>
