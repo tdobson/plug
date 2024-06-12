@@ -164,7 +164,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                         {selectedData.order_meta.cc_volunteer !== 'none' && (
                             <>
                                 <Space h="md" />
-                                <Text fw={500}>Volunteering:</Text>
+                                <Text fw={500}>Role:</Text>
                                 <Text>Helping with {selectedData.order_meta.cc_volunteer} this time.</Text>
                             </>
                         )}
