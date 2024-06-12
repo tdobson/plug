@@ -1,10 +1,10 @@
 // components/Modal/Modal.tsx
 import React, { useState } from 'react';
-import { Modal, Button, Text, Divider } from '@mantine/core';
+import { Modal, Button, Text, Divider, Group, Badge, Space, Card } from '@mantine/core';
 import { useSendOrderMeta } from '../../utils/api';
 import { RowData } from '../../types/checkin';
 import './Modal.css';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { IconAlertCircle, IconMoodCheck, IconStar, IconUserCheck } from '@tabler/icons-react';
 
 interface ModalComponentProps {
     isOpen: boolean;
@@ -118,83 +118,123 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
             return 'Last climbed with us in the past month';
         } else if (daysDifference <= 90) {
             return 'Last climbed with us in the past 3 months';
+        } else if (daysDifference <= 30000) {
+            return 'It\'s been a while since they last climbed with us! Welcome them back :)';
         } else {
-            return 'It\'s been a while since they last climbed with us! Welcome them back :) ';
+            return 'This is their first time climbing with us!';
         }
+    };
+
+    // Ensure stats_attendance_indoor_wednesday_attended_cached is treated as a number
+    const attendance = selectedData?.user_meta?.stats_attendance_indoor_wednesday_attended_cached
+        ? Number(selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached)
+        : null;
+
+    const showHappyBadgeIcon = (ccMember: string) => ccMember === 'yes';
+    const showStarIcon = (committeeCurrent: string) => committeeCurrent && committeeCurrent !== 'retired' && committeeCurrent !== 'expired';
+    const showFirstTimeIcon = (firstTimer: string) => !firstTimer || firstTimer.toLowerCase() !== 'no';
+
+    const getVolunteerValueColor = (value: number) => {
+        if (value > 54) return 'purple';
+        if (value <= 20) return 'red';
+        if (value <= 30) return 'orange';
+        if (value <= 40) return 'green';
+        return 'blue'; // Default color
     };
 
     return (
         <>
-            <Modal opened={isOpen} onClose={onClose} title="Let's get checked in">
+            <Modal opened={isOpen} onClose={onClose}  centered>
                 {selectedData && (
-                    <>
-                        <Text>
-                            {selectedData.user_meta.first_name} {selectedData.user_meta.last_name} (aka{' '}
-                            {selectedData.user_meta.nickname})
-                        </Text>
+                    <Card shadow="sm" padding="lg" radius="md" withBorder>
+                        <Group align="center">
+                            <Text size="lg" fw={500}>
+                                {selectedData.user_meta.first_name} {selectedData.user_meta.last_name}
+                            </Text>
+                            {showHappyBadgeIcon(selectedData.user_meta.cc_member) && <IconMoodCheck size={24} color="blue" aria-label="Clan Member" />}
+                            {showStarIcon(selectedData.user_meta.committee_current) && <IconStar size={24} color="gold" aria-label="Current Committee Member" />}
+                            {showFirstTimeIcon(selectedData.user_meta['admin-first-timer-indoor']) && <IconUserCheck size={24} color="green" aria-label="First Timer" />}
+                            <Text>(aka {selectedData.user_meta.nickname})</Text>
+                        </Group>
+                        <Space h="md" />
+                        <Text fw={500}>Belaying Skills:</Text>
                         <div style={{ backgroundColor: getSkillBackgroundColor(), padding: '10px', borderRadius: '5px' }}>
-                            <Text>Belaying Skills: {selectedData.user_meta['skills-belaying']}</Text>
+                            <Text>{selectedData.user_meta['skills-belaying']}</Text>
                         </div>
-                        {selectedData.user_meta.cc_compliance_last_date_of_climbing && (
-                            <div style={{ padding: '10px', borderRadius: '5px', marginTop: '10px' }}>
-                                <Text>{getLastClimbedText()}</Text>
-                            </div>
+                        {selectedData.order_meta.cc_volunteer !== 'none' && (
+                            <>
+                                <Space h="md" />
+                                <Text fw={500}>Volunteering:</Text>
+                                <Text>Helping with {selectedData.order_meta.cc_volunteer} this time.</Text>
+                            </>
                         )}
-                        <div>
-                            {selectedData.order_meta.cc_volunteer !== 'none' && (
-                                <>
-                                    <Divider />
-                                    <Text>
-                                        Do you know what you're doing to help with {selectedData.order_meta.cc_volunteer}{' '}
-                                        this time?
-                                    </Text>
-                                </>
-                            )}
-                            {selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached === 0 && (
-                                <>
-                                    <Divider />
-                                    <Text>
-                                        First time attendee - {selectedData.user_meta.first_name} is here for the first
-                                        time. Make them feel welcome!
-                                    </Text>
-                                </>
-                            )}
-                            {selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached === 1 && (
-                                <>
-                                    <Divider />
-                                    <Text>
-                                        Second time attendee - {selectedData.user_meta.first_name} is here for the second
-                                        time - help us get to know them. Ask them a question?
-                                    </Text>
-                                </>
-                            )}
-                            {selectedData.user_meta.stats_attendance_indoor_wednesday_attended_cached === 2 && (
-                                <>
-                                    <Divider />
-                                    <Text>
-                                        Third time attendee - {selectedData.user_meta.first_name} is here for the third
-                                        time - welcome them back?
-                                    </Text>
-                                </>
-                            )}
-                            <Divider />
-                            {(selectedData.user_meta['admin-participation-statement-one'] !== 'yes' || selectedData.user_meta['admin-participation-statement-two'] !== 'yes') && (
+                        {getLastClimbedText() && (
+                            <>
+                                <Space h="md" />
+                                <Text  fw={500}>{getLastClimbedText()}</Text>
+                            </>
+                        )}
+                        <Space h="lg" />
+                        <Group >
+                            {(selectedData.user_meta['admin-participation-statement-one'] === 'yes' && selectedData.user_meta['admin-participation-statement-two'] === 'yes') ? (
+                                <Button onClick={handleUpdate}>They're here</Button>
+                            ) : (
                                 <>
                                     <IconAlertCircle size={24} color="red" aria-label="participation statement not agreed" />
-                                    <Divider />
-                                    <Text>{selectedData.user_meta.first_name} hasn't completed all the mandatory disclaimers which we need filled in before they can climb. <br /> Please direct them to www.climbingclan.com/edit <br /> Once they've completed their disclaimers, you'll be able to check them in here. </Text>
-                                </>
-                            )}
-                            {(selectedData.user_meta['admin-participation-statement-one'] === 'yes' && selectedData.user_meta['admin-participation-statement-two'] === 'yes') && (
-                                <>
-                                    <Button onClick={handleUpdate}>Mark Checked In</Button>
+                                    <Text>{selectedData.user_meta.first_name} hasn't completed all the mandatory disclaimers which we need filled in before they can climb.<br />Please direct them to www.climbingclan.com/edit<br />Once they've completed their disclaimers, you'll be able to check them in here.</Text>
                                 </>
                             )}
                             <Button color="red" onClick={() => setShowNonAttendanceModal(true)}>
-                                Mark non-attendance
+                                They're not coming
                             </Button>
-                        </div>
-                    </>
+                        </Group>
+                        <Space h="lg" />
+
+                        {attendance !== null && (
+                            <>
+                                <Divider my="md" />
+                                {attendance === 0 && (
+                                    <Text>
+                                        {selectedData.user_meta.first_name} is here for the first time. Make them feel welcome!
+                                    </Text>
+                                )}
+                                {attendance === 1 && (
+                                    <Text>
+                                        {selectedData.user_meta.first_name} is here for the second time - help us get to know them!
+                                    </Text>
+                                )}
+                                {attendance === 2 && (
+                                    <Text>
+                                        {selectedData.user_meta.first_name} is here for the third time - welcome them back?
+                                    </Text>
+                                )}
+                                <Divider my="md" />
+                            </>
+                        )}
+                        <Group>
+
+                            {selectedData.user_meta.scores_volunteer_value_cached && selectedData.user_meta.scores_volunteer_value_cached > 0 && (
+                                <Badge color={getVolunteerValueColor(selectedData.user_meta.scores_volunteer_value_cached)} variant="light">
+                                    Role Receptiveness: {selectedData.user_meta.scores_volunteer_value_cached}%
+                                </Badge>
+                            )}
+                            {selectedData.user_meta.stats_volunteer_for_numerator_cached && (
+                                <Badge color="blue" variant="light">
+                                    Done {selectedData.user_meta.stats_volunteer_for_numerator_cached} roles
+                                </Badge>
+                            )}
+                            {selectedData.user_meta.committee_current && selectedData.user_meta.committee_current.toLowerCase() !== 'retired' && (
+                                <Badge color="blue" variant="light">
+                                    Clan Committee Member: {selectedData.user_meta.committee_current}
+                                </Badge>
+                            )}
+                            {selectedData.user_meta.cc_member && selectedData.user_meta.cc_member.toLowerCase() !== 'expired' && (
+                                <Badge color="blue" variant="light">
+                                    Active Clan Membership
+                                </Badge>
+                            )}
+                        </Group>
+                    </Card>
                 )}
             </Modal>
 
@@ -204,32 +244,16 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                 title="How did they not attend?"
             >
                 <div className="button-container">
-                    <Button
-                        fullWidth
-                        onClick={() => handleNonAttendance('cancelled')}
-                        className="wrap-button"
-                    >
+                    <Button fullWidth onClick={() => handleNonAttendance('cancelled')} className="wrap-button">
                         Did they let you know they<br /> weren't coming in advance?
                     </Button>
-                    <Button
-                        fullWidth
-                        onClick={() => handleNonAttendance('late-bail')}
-                        className="wrap-button"
-                    >
+                    <Button fullWidth onClick={() => handleNonAttendance('late-bail')} className="wrap-button">
                         Did they let you know they<br /> weren't coming after 6pm?
                     </Button>
-                    <Button
-                        fullWidth
-                        onClick={() => handleNonAttendance('noshow')}
-                        className="wrap-button"
-                    >
+                    <Button fullWidth onClick={() => handleNonAttendance('noshow')} className="wrap-button">
                         Did they noshow?
                     </Button>
-                    <Button
-                        fullWidth
-                        onClick={() => handleNonAttendance('duplicate')}
-                        className="wrap-button"
-                    >
+                    <Button fullWidth onClick={() => handleNonAttendance('duplicate')} className="wrap-button">
                         Is this a duplicate signup?
                     </Button>
                 </div>
@@ -241,18 +265,10 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                 title="Did they do their role?"
             >
                 <Text>Did they do their role of {selectedData?.order_meta?.cc_volunteer} for this event?</Text>
-                <Button
-                    fullWidth
-                    onClick={() => handleVolunteerAttendance(true)}
-                    className="wrap-button"
-                >
+                <Button fullWidth onClick={() => handleVolunteerAttendance(true)} className="wrap-button">
                     Yes
                 </Button>
-                <Button
-                    fullWidth
-                    onClick={() => handleVolunteerAttendance(false)}
-                    className="wrap-button"
-                >
+                <Button fullWidth onClick={() => handleVolunteerAttendance(false)} className="wrap-button">
                     No
                 </Button>
             </Modal>

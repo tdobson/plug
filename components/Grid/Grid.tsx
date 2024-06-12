@@ -1,8 +1,9 @@
+// components/Grid/GridComponent.tsx
 import React from 'react';
-import { Grid, Text, Badge } from '@mantine/core';
+import { Grid, Text, Badge, Card, Group, Space } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { RowData } from '../../types/checkin';
-import { IconAlertCircle } from '@tabler/icons-react'; // Make sure to install @tabler/icons-react
+import {IconAlertCircle, IconMoodCheck, IconStar, IconUserCheck } from '@tabler/icons-react'; // Make sure to install @tabler/icons-react
 
 interface GridComponentProps {
     rowData: RowData[];
@@ -36,27 +37,47 @@ const GridComponent: React.FC<GridComponentProps> = ({ rowData, onRowClick }) =>
         return 'red';
     };
 
+    const getVolunteerValueColor = (value: number) => {
+        if (value > 54) return 'purple';
+        if (value <= 20) return 'red';
+        if (value <= 30) return 'orange';
+        if (value <= 40) return 'green';
+        return 'blue'; // Default color
+    };
+
+    const showHappyBadgeIcon = (ccMember: string) => ccMember === 'yes';
+    const showStarIcon = (committeeCurrent: string) => committeeCurrent && committeeCurrent !== 'retired' && committeeCurrent !== 'expired';
+    const showFirstTimeIcon = (firstTimer: string) => !firstTimer || firstTimer.toLowerCase() !== 'no';
+
     return (
         <Grid>
             {rowData.map((userData) => (
                 <Grid.Col key={userData.user_id} span={getColSpan()} onClick={() => handleRowClick(userData)}>
-                    <div style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '4px', cursor: 'pointer' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                            <Text fw={500} size="lg" style={{ marginRight: '8px' }}>
+                    <Card shadow="sm" padding="lg" radius="md" withBorder>
+                        <Card.Section>
+                        <Group align="center" mb="sm">
+                            <Text fw={500} size="lg">
                                 {userData.user_meta.first_name} {userData.user_meta.last_name}
                             </Text>
-                            {(userData.user_meta['admin-participation-statement-one'] !== 'yes' || userData.user_meta['admin-participation-statement-two'] !== 'yes') && (
+                            {userData.user_meta['admin-participation-statement-one'] !== 'yes' || userData.user_meta['admin-participation-statement-two'] !== 'yes' ? (
                                 <IconAlertCircle size={24} color="red" aria-label="participation statement not agreed" />
-                            )}
-                        </div>
-                        <Text size="sm" color="dimmed" mb={8}>
+                            ) : null}
+                            {showHappyBadgeIcon(userData.user_meta.cc_member) && <IconMoodCheck size={24} color="blue" aria-label="Clan Member" />}
+                            {showStarIcon(userData.user_meta.committee_current) && <IconStar size={24} color="gold" aria-label="Current Committee Member" />}
+                            {showFirstTimeIcon(userData.user_meta['admin-first-timer-indoor']) && <IconUserCheck size={24} color="green" aria-label="First Timer" />}
+
+
+                        </Group>
+
+                        <Text size="sm" color="dimmed">
                             Facebook Name: {userData.user_meta.nickname}
                         </Text>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-                            <Badge color={getAttendanceTimesColor(userData.user_meta.stats_attendance_attended_cached)} variant="light">
+                        </Card.Section><Card.Section>
+                        <Space h="md" />
+                        <Group  mb="sm">
+                            <Badge color={getAttendanceTimesColor(Number(userData.user_meta.stats_attendance_attended_cached))} variant="light">
                                 Attended: {userData.user_meta.stats_attendance_attended_cached} times
                             </Badge>
-
                             {userData.user_meta.scores_attendance_reliability_score_cached && (
                                 <Badge color={getAttendanceReliabilityColor(Number(userData.user_meta.scores_attendance_reliability_score_cached))} variant="light">
                                     Attendance Reliability: {userData.user_meta.scores_attendance_reliability_score_cached}%
@@ -64,11 +85,12 @@ const GridComponent: React.FC<GridComponentProps> = ({ rowData, onRowClick }) =>
                             )}
                             {userData.order_meta.cc_volunteer !== 'none' && (
                                 <Badge color="grape" variant="light">
-                                    Volunteering this time as: {userData.order_meta.cc_volunteer}
+                                    Role this time as: {userData.order_meta.cc_volunteer}
                                 </Badge>
                             )}
-                        </div>
-                    </div>
+                        </Group>
+                       </Card.Section>
+                    </Card>
                 </Grid.Col>
             ))}
         </Grid>

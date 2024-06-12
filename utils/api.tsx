@@ -84,7 +84,7 @@ export function useFetchDetailsForMissingUserOrderIDs(productId: string, userOrd
                 'first_name',
                 'scores_attendance_reliability_score_cached',
                 'scores_volunteer_reliability_score_cached',
-                'scores_volunteer_value_cached',
+                'scores_volunteer_score_cached',
                 'stats_attendance_indoor_wednesday_attended_cached',
                 'admin-can-you-help',
                 'nickname',

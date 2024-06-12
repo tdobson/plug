@@ -10,9 +10,10 @@ export interface UserMeta {
     stats_attendance_indoor_wednesday_attended_cached: number;
     admin_can_you_help: string;
     climbing_indoors_leading_grades: string;
+    scores_volunteer_score_cached: number;
     climbing_indoors_toproping_grades: string;
     climbing_indoors_skills_passing_on: string;
-    admin_first_timer_indoor: string;
+    'admin-first-timer-indoor': string;
     admin_wednesday_requests_notes: string;
     milestones_3_badge: string;
     milestones_5_band: string;
