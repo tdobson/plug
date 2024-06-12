@@ -6,8 +6,9 @@ import { useFetchUserOrderIDs, useFetchDetailsForMissingUserOrderIDs } from '../
 import GridComponent from '../../components/Grid/Grid';
 import ModalComponent from '../../components/Modal/Modal';
 import CheckInStatusMessage from '../../components/CheckInStatusMessage/CheckInStatusMessage';
+import TongueTwister from '../../components/TongueTwister/TongueTwister';
 import { RowData } from '../../types/checkin';
-import {Space} from "@mantine/core";
+import { Divider, Space } from "@mantine/core";
 
 const CheckInPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,26 +28,8 @@ const CheckInPage = () => {
     console.log('User Order IDs:', userOrderIDs);
     console.log('User Order Details:', userOrderDetails);
 
-    const tongueTwisters = [
-        "Clan climbers cling to cliffs with clever grips.",
-        "Crisp cliffs challenge clever clan climbers.",
-        "Clan climbers' climbing clashes cause countless cheers.",
-        "Cliff-clinging clan climbers conquer craggy crests.",
-        "Clan climbers conquer crags, clambering quickly.",
-        "Clever clan climbers cling to crumbling cliffs.",
-        "Clan climbers clip carabiners carefully, conquering cliffs.",
-        "Clan climbers' crisp climbs create countless challenges.",
-        "Craggy cliffs call cunning clan climbers constantly.",
-        "Clan climbers' climbing quests conquer crumbling cliffs."
-    ];
-
-    function getRandomTongueTwister() {
-        const randomIndex = Math.floor(Math.random() * tongueTwisters.length);
-        return tongueTwisters[randomIndex];
-    }
-
     if (isUserOrderIDsLoading || isUserOrderDetailsLoading) {
-        return <div>{getRandomTongueTwister()}</div>;
+        return <TongueTwister />;
     }
 
     if (isUserOrderIDsError || isUserOrderDetailsError) {
@@ -86,8 +69,12 @@ const CheckInPage = () => {
     const handleUpdate = (updatedData: RowData) => {
         setSelectedRowData(null);
         setIsModalOpen(false);
-        // Re-fetch or update state logic to reflect the change in attendance status
-    };
+        // Remove the updated user from userOrderDetails
+        const updatedUserOrderDetails = {...userOrderDetails};
+        delete updatedUserOrderDetails[updatedData.user_id];
+        // Optionally, you can update the userOrderDetails state here if needed
+        // setUserOrderDetails(updatedUserOrderDetails);
+    }
 
     const handleDelete = (userId: string) => {
         // Logic to handle deletion
@@ -101,7 +88,8 @@ const CheckInPage = () => {
             <h1>Check-in</h1>
             <CheckInStatusMessage userOrderDetails={userOrderDetails} />
             <Space />
-            <GridComponent rowData={sortedUserOrderDetails} onRowClick={handleRowClick} />
+            <Divider />
+            <GridComponent rowData={sortedUserOrderDetails} onRowClick={handleRowClick} userOrderDetails={userOrderDetails} />
             <ModalComponent
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
