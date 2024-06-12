@@ -37,10 +37,31 @@ const CheckInPage = () => {
     console.log('Is User Order Details Loading:', isUserOrderDetailsLoading);
     console.log('Is User Order Details Error:', isUserOrderDetailsError);
 
+    const isValidUserOrderDetails = (details: any): details is Record<string, RowData> => {
+        if (typeof details !== 'object' || details === null) return false;
+
+        return Object.values(details).every((detail: any, index) => {
+            const valid = (
+                typeof detail.user_id === 'number' &&
+                typeof detail.order_id === 'number' &&
+                typeof detail.order_status === 'string' &&
+                detail.user_meta && typeof detail.user_meta === 'object' &&
+                detail.order_meta && typeof detail.order_meta === 'object'
+            );
+            if (!valid) {
+                console.error(`Validation failed at index ${index}:`, detail);
+            }
+            return valid;
+        });
+    };
+
+    if (!isValidUserOrderDetails(userOrderDetails)) {
+        console.error('Invalid data structure received:', userOrderDetails);
+        return <div>Invalid data structure received. Please check the console for details.</div>;
+    }
+
     // Filter userOrderDetails based on cc_attendance
-    const filteredUserOrderDetails = userOrderDetails
-        ? Object.values(userOrderDetails as Record<string, RowData>).filter(user => user.order_meta.cc_attendance === 'pending')
-        : [];
+    const filteredUserOrderDetails = Object.values(userOrderDetails).filter(user => user.order_meta.cc_attendance === 'pending');
 
     const sortedUserOrderDetails = filteredUserOrderDetails.sort((a, b) =>
         a.user_meta.first_name.localeCompare(b.user_meta.first_name)

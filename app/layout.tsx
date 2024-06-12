@@ -10,6 +10,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en">
         <head>
+            <title>NeoClan: The Climbing Clan's Matrix</title>
             <ColorSchemeScript />
             <link rel="shortcut icon" href="/favicon.svg" />
             <meta

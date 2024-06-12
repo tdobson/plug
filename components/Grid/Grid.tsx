@@ -1,8 +1,8 @@
-// components/Grid/Grid.tsx
 import React from 'react';
 import { Grid, Text, Badge } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { RowData } from '../../types/checkin';
+import { IconAlertCircle } from '@tabler/icons-react'; // Make sure to install @tabler/icons-react
 
 interface GridComponentProps {
     rowData: RowData[];
@@ -41,9 +41,14 @@ const GridComponent: React.FC<GridComponentProps> = ({ rowData, onRowClick }) =>
             {rowData.map((userData) => (
                 <Grid.Col key={userData.user_id} span={getColSpan()} onClick={() => handleRowClick(userData)}>
                     <div style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '4px', cursor: 'pointer' }}>
-                        <Text fw={500} size="lg" mb={8}>
-                            {userData.user_meta.first_name} {userData.user_meta.last_name}
-                        </Text>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                            <Text fw={500} size="lg" style={{ marginRight: '8px' }}>
+                                {userData.user_meta.first_name} {userData.user_meta.last_name}
+                            </Text>
+                            {(userData.user_meta['admin-participation-statement-one'] !== 'yes' || userData.user_meta['admin-participation-statement-two'] !== 'yes') && (
+                                <IconAlertCircle size={24} color="red" aria-label="participation statement not agreed" />
+                            )}
+                        </div>
                         <Text size="sm" color="dimmed" mb={8}>
                             Facebook Name: {userData.user_meta.nickname}
                         </Text>

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: User & Order Meta API
  * Description: Custom WordPress API for retrieving user and order meta fields
- * Version: 1.0
+ * Version: 1.1
  * Author: Tim Dobson
  *
  * This plugin provides a custom API endpoint for retrieving user and order meta fields in WordPress.
@@ -66,6 +66,47 @@
  * - The function authenticate_request_rest() is the callback for the API endpoint permission check.
  */
 
+// Define allowed meta keys
+$allowed_meta_keys = array(
+    'user_meta_keys' => array(
+        'last_name',
+        'stats_attendance_attended_cached',
+        'skills-belaying',
+        'first_name',
+        'scores_attendance_reliability_score_cached',
+        'scores_volunteer_reliability_score_cached',
+        'scores_volunteer_value_cached',
+        'stats_attendance_indoor_wednesday_attended_cached',
+        'admin-can-you-help',
+        'nickname',
+        'climbing-indoors-leading-grades',
+        'climbing-indoors-toproping-grades',
+        'climbing-indoors-skills-passing-on',
+        'admin-first-timer-indoor',
+        'admin-wednesday-requests-notes',
+        'milestones_3_badge',
+        'milestones_5_band',
+        'stats_volunteer_for_numerator_cached',
+        'committee_current',
+        'cc_member',
+        'competency_indoor_trip_director',
+        'competency_indoor_checkin',
+        'competency_indoor_pairing',
+        'competency_indoor_floorwalker',
+        'competency_indoor_skillsharer',
+        'competency_indoor_announcements',
+        'cc_compliance_last_date_of_climbing',
+        'admin-code-of-conduct-accepted',
+        'admin-participation-statement-one',
+        'admin-participation-statement-two'
+    ),
+    'order_meta_keys' => array(
+        'cc_attendance',
+        'cc_volunteer',
+        'cc_volunteer_attendance'
+    )
+);
+
 // Define the API endpoint
 add_action('rest_api_init', function () {
     register_rest_route('wp-api/v1', '/user-order-meta', array(
@@ -76,6 +117,8 @@ add_action('rest_api_init', function () {
 });
 
 function get_user_order_meta($request) {
+    global $allowed_meta_keys;
+
     $user_order_ids = $request->get_param('user_order_ids');
     $user_meta_keys = $request->get_param('user_meta_keys');
     $order_meta_keys = $request->get_param('order_meta_keys');
@@ -90,6 +133,19 @@ function get_user_order_meta($request) {
     foreach ($user_order_ids as $user_order) {
         if (!is_array($user_order) || !isset($user_order['user_id']) || !isset($user_order['order_id'])) {
             return new WP_Error('invalid_user_order_structure', 'Each user_order_ids item should be an array with user_id and order_id.', array('status' => 400));
+        }
+    }
+
+    // Check if requested keys are allowed
+    foreach ($user_meta_keys as $key) {
+        if (!in_array($key, $allowed_meta_keys['user_meta_keys'])) {
+            return new WP_Error('forbidden_user_meta_key', "The user meta key '{$key}' is not allowed.", array('status' => 403));
+        }
+    }
+
+    foreach ($order_meta_keys as $key) {
+        if (!in_array($key, $allowed_meta_keys['order_meta_keys'])) {
+            return new WP_Error('forbidden_order_meta_key', "The order meta key '{$key}' is not allowed.", array('status' => 403));
         }
     }
 

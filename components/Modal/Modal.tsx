@@ -1,8 +1,10 @@
+// components/Modal/Modal.tsx
 import React, { useState } from 'react';
 import { Modal, Button, Text, Divider } from '@mantine/core';
 import { useSendOrderMeta } from '../../utils/api';
 import { RowData } from '../../types/checkin';
 import './Modal.css';
+import { IconAlertCircle } from '@tabler/icons-react';
 
 interface ModalComponentProps {
     isOpen: boolean;
@@ -94,7 +96,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
         return ''; // Empty string for default background color
     };
 
-    const getLastClimbedBackgroundColor = () => {
+    const getLastClimbedText = () => {
         if (
             !selectedData ||
             !selectedData.user_meta ||
@@ -108,14 +110,16 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
         const timeDifference = currentDate.getTime() - lastClimbedDate.getTime();
         const daysDifference = timeDifference / (1000 * 3600 * 24);
 
-        if (daysDifference <= 7) {
-            return 'lightgreen';
+        if (daysDifference <= 9) {
+            return 'Last climbed with us in the past week';
+        } else if (daysDifference <= 16) {
+            return 'Last climbed with us in the past fortnight';
         } else if (daysDifference <= 30) {
-            return 'lightyellow';
-        } else if (daysDifference <= 60) {
-            return 'lightcoral';
+            return 'Last climbed with us in the past month';
+        } else if (daysDifference <= 90) {
+            return 'Last climbed with us in the past 3 months';
         } else {
-            return 'lightgrey';
+            return 'It\'s been a while since they last climbed with us! Welcome them back :) ';
         }
     };
 
@@ -131,9 +135,11 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                         <div style={{ backgroundColor: getSkillBackgroundColor(), padding: '10px', borderRadius: '5px' }}>
                             <Text>Belaying Skills: {selectedData.user_meta['skills-belaying']}</Text>
                         </div>
-                        <div style={{ backgroundColor: getLastClimbedBackgroundColor(), padding: '10px', borderRadius: '5px', marginTop: '10px' }}>
-                            <Text>Last Climbed: {selectedData.user_meta.cc_compliance_last_date_of_climbing}</Text>
-                        </div>
+                        {selectedData.user_meta.cc_compliance_last_date_of_climbing && (
+                            <div style={{ padding: '10px', borderRadius: '5px', marginTop: '10px' }}>
+                                <Text>{getLastClimbedText()}</Text>
+                            </div>
+                        )}
                         <div>
                             {selectedData.order_meta.cc_volunteer !== 'none' && (
                                 <>
@@ -172,8 +178,18 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                                 </>
                             )}
                             <Divider />
-                            <Button onClick={handleUpdate}>Mark Checked In</Button>
-                            <Divider />
+                            {(selectedData.user_meta['admin-participation-statement-one'] !== 'yes' || selectedData.user_meta['admin-participation-statement-two'] !== 'yes') && (
+                                <>
+                                    <IconAlertCircle size={24} color="red" aria-label="participation statement not agreed" />
+                                    <Divider />
+                                    <Text>{selectedData.user_meta.first_name} hasn't completed all the mandatory disclaimers which we need filled in before they can climb. <br /> Please direct them to www.climbingclan.com/edit <br /> Once they've completed their disclaimers, you'll be able to check them in here. </Text>
+                                </>
+                            )}
+                            {(selectedData.user_meta['admin-participation-statement-one'] === 'yes' && selectedData.user_meta['admin-participation-statement-two'] === 'yes') && (
+                                <>
+                                    <Button onClick={handleUpdate}>Mark Checked In</Button>
+                                </>
+                            )}
                             <Button color="red" onClick={() => setShowNonAttendanceModal(true)}>
                                 Mark non-attendance
                             </Button>
@@ -200,7 +216,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, select
                         onClick={() => handleNonAttendance('late-bail')}
                         className="wrap-button"
                     >
-                        Did they let you know they<br/> weren't coming after 6pm?
+                        Did they let you know they<br /> weren't coming after 6pm?
                     </Button>
                     <Button
                         fullWidth

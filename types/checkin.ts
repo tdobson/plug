@@ -27,8 +27,8 @@ export interface UserMeta {
     competency_indoor_announcements: string;
     cc_compliance_last_date_of_climbing: string;
     admin_code_of_conduct_accepted: string;
-    admin_participation_statement_one: string;
-    admin_participation_statement_two: string;
+    'admin-participation-statement-one': string;
+    'admin-participation-statement-two': string;
 
 }
 
