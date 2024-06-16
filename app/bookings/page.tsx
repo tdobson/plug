@@ -13,14 +13,17 @@ const BookingsPage = () => {
     const [selectedRowData, setSelectedRowData] = useState<Booking | null>(null);
     const [villas, setVillas] = useState<Villa[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
-    const [startDate, setStartDate] = useState('2023-01-01'); // Default start date
-    const [endDate, setEndDate] = useState('2023-12-31'); // Default end date
+    const [startDate, setStartDate] = useState('2024-01-01'); // Default start date
+    const [endDate, setEndDate] = useState('2024-12-31'); // Default end date
 
     useEffect(() => {
         async function loadData() {
             try {
-                const villasData = await fetchVillas();
+
                 const bookingsData = await fetchBookings();
+                console.log("calling villas now")
+                const villasData = await fetchVillas();
+                console.log("called villas")
                 setVillas(villasData);
                 setBookings(bookingsData);
             } catch (error) {
@@ -56,7 +59,7 @@ const BookingsPage = () => {
 
     return (
         <div>
-            <h1>Check-in</h1>
+            <h1>Bookings</h1>
             <Space />
             <Divider />
             <GridComponent
