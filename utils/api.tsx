@@ -1,6 +1,6 @@
-import { useQuery, useMutation } from 'react-query';
+import {useQuery, useMutation, useQueryClient} from 'react-query';
 import { useEffect, useState } from 'react';
-import { RowData } from '../types/checkin';
+import { RowData } from '../types/api';
 
 // Variable to toggle between Bearer authentication and WordPress Auth
 const USE_BEARER_AUTH = true; // Set to false to use WordPress Auth
@@ -135,24 +135,36 @@ export function useFetchDetailsForMissingUserOrderIDs(productId: string, userOrd
 
 export function useSendOrderMeta() {
     const nonce = useNonce();
+    const queryClient = useQueryClient();
 
-    return useMutation(async (rowData: RowData) => {
-        const headers = getHeaders(nonce);
+    return useMutation(
+        async (rowData: RowData) => {
+            const headers = getHeaders(nonce);
 
-        const response = await fetch('https://www.climbingclan.com/wp-json/wp-api/v1/update-order-meta', {
-            method: 'POST',
-            headers: headers,
-            credentials: 'same-origin', // Include cookies for WordPress auth
-            body: JSON.stringify(rowData),
-        });
+            const response = await fetch('https://www.climbingclan.com/wp-json/wp-api/v1/update-order-meta', {
+                method: 'POST',
+                headers: headers,
+                credentials: 'same-origin', // Include cookies for WordPress auth
+                body: JSON.stringify(rowData),
+            });
 
-        if (response.status === 401) {
-            window.location.href = `/wp-login.php?redirect_to=${encodeURIComponent(window.location.pathname)}`;
-            return;
+            if (response.status === 401) {
+                window.location.href = `/wp-login.php?redirect_to=${encodeURIComponent(window.location.pathname)}`;
+                throw new Error('Unauthorized'); // Throw an error to be caught by the mutation
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to update order meta'); // Throw an error for other non-successful responses
+            }
+
+            return await response.json();
+        },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('userOrderDetails');
+            },
         }
-
-        return await response.json();
-    });
+    );
 }
 
 // Custom hook for fetching live events

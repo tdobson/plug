@@ -2,15 +2,16 @@
 import React from 'react';
 import { Grid, Text, Badge, Card, Group, Space } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { RowData } from '../../types/checkin';
+import { RowData } from '../../types/api';
 import {IconAlertCircle, IconMoodCheck, IconStar, IconUserCheck } from '@tabler/icons-react'; // Make sure to install @tabler/icons-react
 
 interface GridComponentProps {
     rowData: RowData[];
     onRowClick: (rowData: RowData) => void;
+    userOrderDetails: Record<string, RowData>;
 }
 
-const GridComponent: React.FC<GridComponentProps> = ({ rowData, onRowClick }) => {
+const GridComponent: React.FC<GridComponentProps> = ({ rowData, onRowClick, userOrderDetails }) => {
     const handleRowClick = (rowData: RowData) => {
         onRowClick(rowData);
     };
