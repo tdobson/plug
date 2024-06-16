@@ -1,6 +1,5 @@
 // services/apiService.ts
-
-import { Booking, Villa, Customer } from '../types/api';
+import { Booking, Villa } from '../types/api';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -9,7 +8,7 @@ export async function fetchVillas(): Promise<Villa[]> {
     if (!response.ok) {
         throw new Error('Failed to fetch villas');
     }
-    return response.json();
+    return await response.json();
 }
 
 export async function fetchBookings(): Promise<Booking[]> {
@@ -17,7 +16,7 @@ export async function fetchBookings(): Promise<Booking[]> {
     if (!response.ok) {
         throw new Error('Failed to fetch bookings');
     }
-    return response.json();
+    return await response.json();
 }
 
 export async function createBooking(bookingData: Booking): Promise<Booking> {
@@ -34,7 +33,7 @@ export async function createBooking(bookingData: Booking): Promise<Booking> {
     return response.json();
 }
 
-export async function updateBooking({ id, data }: { id: number, data: Booking }): Promise<Booking> {
+export async function updateBooking({ id, data }: { id: number; data: Partial<Booking> }): Promise<Booking> {
     const response = await fetch(`${API_BASE_URL}/bookings/${id}`, {
         method: 'PUT',
         headers: {

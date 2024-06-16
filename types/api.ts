@@ -1,3 +1,4 @@
+// types/api.ts
 export interface Villa {
     uuid: string;
     website_id: number;
