@@ -3,8 +3,8 @@ import '@mantine/core/styles.css';
 import React from 'react';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 import { theme } from '../theme';
-import { QueryProvider } from './../utils/QueryProvider';
-
+import { QueryProvider } from '../utils/QueryProvider';
+import { MantineEmotionProvider } from "@mantine/emotion";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -20,11 +20,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </head>
         <body>
         <MantineProvider theme={theme}>
-            <QueryProvider>
-                 {children}
-             </QueryProvider>
+            <MantineEmotionProvider>
+                <QueryProvider>
+                    {children}
+                </QueryProvider>
+            </MantineEmotionProvider>
         </MantineProvider>
-
         </body>
         </html>
     );
