@@ -1,6 +1,6 @@
-import {useQuery, useMutation, useQueryClient} from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useEffect, useState } from 'react';
-import { RowData } from '../types/api';
+import { Booking } from '../types/api';
 
 // Variable to toggle between Bearer authentication and WordPress Auth
 const USE_BEARER_AUTH = true; // Set to false to use WordPress Auth
@@ -35,7 +35,6 @@ function getHeaders(nonce: string | null): { 'Content-Type': string; 'X-WP-Nonce
 
     if (USE_BEARER_AUTH && BEARER_TOKEN) {
         headers['Authorization'] = `Bearer ${BEARER_TOKEN}`;
-
     } else if (nonce) {
         headers['X-WP-Nonce'] = nonce;
     }
@@ -138,14 +137,14 @@ export function useSendOrderMeta() {
     const queryClient = useQueryClient();
 
     return useMutation(
-        async (rowData: RowData) => {
+        async (booking: Booking) => {
             const headers = getHeaders(nonce);
 
             const response = await fetch('https://www.climbingclan.com/wp-json/wp-api/v1/update-order-meta', {
                 method: 'POST',
                 headers: headers,
                 credentials: 'same-origin', // Include cookies for WordPress auth
-                body: JSON.stringify(rowData),
+                body: JSON.stringify(booking),
             });
 
             if (response.status === 401) {
