@@ -10,7 +10,7 @@ const nextConfig = {
     // Optional: Prevent automatic `/me` -> `/me/`, instead preserve `href`
     // skipTrailingSlashRedirect: true,
 //distDir: 'build',
-   distDir: 'wp-neoclan-matrix/assets/',
+   distDir: 'build',
 }
 
 module.exports = nextConfig
